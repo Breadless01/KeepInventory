@@ -1,0 +1,93 @@
+.ki-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.ki-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.ki-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ki-form-group label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.ki-input {
+  padding: 0.4rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.ki-input:focus {
+  border-color: #e53935;
+  box-shadow: 0 0 0 1px rgba(229, 57, 53, 0.25);
+}
+
+.ki-separator {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 0.25rem 0 0.75rem;
+}
+
+/* Sachnummer Preview */
+.ki-sachnummer-preview {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  background: #f9fafb;
+  border-radius: 6px;
+  padding: 0.45rem 0.6rem;
+  border: 1px dashed #d1d5db;
+  font-size: 0.9rem;
+}
+
+.ki-sachnummer-hint {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+/* Buttons im Modal */
+.ki-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.ki-btn-primary,
+.ki-btn-secondary {
+  border-radius: 6px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+}
+
+.ki-btn-primary {
+  background: #e53935;
+  color: white;
+}
+
+.ki-btn-primary:hover {
+  background: #c62828;
+}
+
+.ki-btn-secondary {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.ki-btn-secondary:hover {
+  background: #e5e7eb;
+}

@@ -9,10 +9,18 @@ import (
 )
 
 type App struct {
-	ctx            context.Context
-	BauteilService *application.BauteilService
-	KundeService   *application.KundeService
-	ProjektService *application.ProjektService
+	ctx                           context.Context
+	BauteilService                *application.BauteilService
+	KundeService                  *application.KundeService
+	ProjektService                *application.ProjektService
+	TypService                    *application.TypService
+	HerstellungsartService        *application.HerstellungsartService
+	VerschleissteilService        *application.VerschleissteilService
+	FunktionService               *application.FunktionService
+	MaterialService               *application.MaterialService
+	OberflaechenbehandlungService *application.OberflaechenbehandlungService
+	FarbeService                  *application.FarbeService
+	ReserveService                *application.ReserveService
 }
 
 // Wails ruft das beim Start auf und gibt dir den Context.
@@ -87,4 +95,36 @@ func (a *App) CreateProjekt(req CreateProjektRequest) (*domain.Projekt, error) {
 
 func (a *App) ListProjekte() ([]*domain.Projekt, error) {
 	return a.ProjektService.ListProjekte()
+}
+
+func (a *App) ListTypen() ([]*domain.Typ, error) {
+	return a.TypService.FindAll()
+}
+
+func (a *App) ListHerstellungsarten() ([]*domain.Herstellungsart, error) {
+	return a.HerstellungsartService.FindAll()
+}
+
+func (a *App) ListVerschleissteile() ([]*domain.Verschleissteil, error) {
+	return a.VerschleissteilService.FindAll()
+}
+
+func (a *App) ListFunktionen() ([]*domain.Funktion, error) {
+	return a.FunktionService.FindAll()
+}
+
+func (a *App) ListMaterialien() ([]*domain.Material, error) {
+	return a.MaterialService.FindAll()
+}
+
+func (a *App) ListOberflaechenbehandlungen() ([]*domain.Oberflaechenbehandlung, error) {
+	return a.OberflaechenbehandlungService.FindAll()
+}
+
+func (a *App) ListFarben() ([]*domain.Farbe, error) {
+	return a.FarbeService.FindAll()
+}
+
+func (a *App) ListReserven() ([]*domain.Reserve, error) {
+	return a.ReserveService.FindAll()
 }

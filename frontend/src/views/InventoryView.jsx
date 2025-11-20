@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ListBauteile } from "../../wailsjs/go/backend/App.js";
-import { Modal } from "../components/ui/Modal.jsx";
+import { NewBauteilModal } from "../components/special/NewBauteilModal.jsx";
 import { Plus } from "lucide-react";
 
 export default function InventoryView() {
@@ -11,7 +11,7 @@ export default function InventoryView() {
   const [bestand, setBestand] = useState(0);
   const [error, setError] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-
+  
   async function loadBauteile() {
     try {
       const list = await ListBauteile();
@@ -22,37 +22,23 @@ export default function InventoryView() {
     }
   }
 
-  async function handleNew() {
-    // Placeholder for creating a new Bauteil
-    alert("Neues Bauteil anlegen - Funktion noch nicht implementiert.");
-  }
-
   useEffect(() => {
     loadBauteile();
   }, []);
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    setError("");
-
+  async function reloadBauteile() {
     try {
-      await CreateBauteil({
-        name,
-        lagerort,
-        beschreibung,
-        lagerbestand: Number(bestand),
-      });
-
-      setName("");
-      setLagerort("");
-      setBeschreibung("");
-      setBestand(0);
-      await loadBauteile();
+      const list = await ListBauteile();
+      setBauteile(list || []);
     } catch (e) {
       console.error(e);
       setError(String(e));
     }
   }
+
+  useEffect(() => {
+    reloadBauteile();
+  }, []);
 
   const safeBauteile = bauteile || [];
 
@@ -99,11 +85,13 @@ export default function InventoryView() {
           </div>
         )}
       </div>
-      {modalOpen && (
-        <Modal title="Neues Bauteil" onClose={() => setModalOpen(false)}>
-          <p>Hier kannst du später ein Bauteil anlegen.</p>
-        </Modal>
-      )}
+      <NewBauteilModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onCreated={() => {
+          reloadBauteile();
+        }}
+      />
     </div>
   );
 }

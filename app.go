@@ -50,10 +50,28 @@ func NewAppContainer() *AppContainer {
 	projektRepo := sqliteadapter.NewProjektRepositorySQLite(db)
 	projektService := application.NewProjektService(projektRepo, kundeRepo)
 
+	// Stammdaten services
+	typService := application.NewTypService(typRepo)
+	herstellungsartService := application.NewHerstellungsartService(artRepo)
+	verschleissteilService := application.NewVerschleissteilService(verschRepo)
+	funktionService := application.NewFunktionService(funktionRepo)
+	materialService := application.NewMaterialService(materialRepo)
+	oberflaechenbehandlungService := application.NewOberflaechenbehandlungService(oberfRepo)
+	farbeService := application.NewFarbeService(farbeRepo)
+	reserveService := application.NewReserveService(reserveRepo)
+
 	backendApp := &backend.App{
-		BauteilService: bauteilService,
-		KundeService:   kundeService,
-		ProjektService: projektService,
+		BauteilService:                bauteilService,
+		KundeService:                  kundeService,
+		ProjektService:                projektService,
+		TypService:                    typService,
+		HerstellungsartService:        herstellungsartService,
+		VerschleissteilService:        verschleissteilService,
+		FunktionService:               funktionService,
+		MaterialService:               materialService,
+		OberflaechenbehandlungService: oberflaechenbehandlungService,
+		FarbeService:                  farbeService,
+		ReserveService:                reserveService,
 	}
 
 	return &AppContainer{

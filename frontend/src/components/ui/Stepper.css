@@ -1,0 +1,144 @@
+.ki-stepper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Header mit Steps & Progress-Line */
+.ki-stepper-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Wrapper, damit Track hinter den Buttons liegt */
+.ki-stepper-steps-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Verbindungslinie zwischen den Steps (Hintergrundtrack) */
+.ki-stepper-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 3px;
+  transform: translateY(-50%);
+  background: #f3f4f6; /* hellgrau, wie Sidebar-Hintergrundfeeling */
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+/* Gefüllter Teil, wächst je nach aktuellem Step */
+.ki-stepper-track-fill {
+  height: 100%;
+  background: #e53935; /* dein Rot */
+  border-radius: 999px;
+  transition: width 0.25s ease-out;
+}
+
+/* Step-Buttons liegen über der Linie */
+.ki-stepper-steps {
+  position: relative;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+/* Einzelner Step */
+.ki-stepper-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem;
+  border-radius: 999px;
+
+  border: 1px solid #e5e7eb;
+  background: white;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #e5e7eb;;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.1s ease;
+}
+
+.ki-stepper-step:hover {
+  border: 1px solid #ffe5e5;
+  background: #ffe5e5;
+  color: #c20000;
+}
+
+/* Aktiver Step: wie aktive Nav */
+.ki-stepper-step--active {
+  border-color: #d70000;
+  background: #ffe5e5;
+  color: #444;
+  transform: translateY(-1px);
+}
+
+/* Abgeschlossener Step: dezenter grau, aber klar „fertig“ */
+.ki-stepper-step--done {
+  border-color: #d70000;
+  background: #d70000;
+  color: white;
+}
+
+/* Nummer-Kreis im Step */
+.ki-stepper-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+}
+
+.ki-stepper-step--active .ki-stepper-circle {
+  color: #444;
+}
+
+/* Label im Step */
+.ki-stepper-label {
+  white-space: nowrap;
+}
+
+/* Add-Button (+) im Stepper */
+.ki-stepper-add {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: none;
+  background: #d70000;
+  color: white;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.ki-stepper-add:hover {
+  background: #c62828;
+  transform: translateY(-1px);
+}
+
+.ki-stepper-add:active {
+  transform: translateY(0);
+}
+
+/* Body-Bereich des Steppers */
+.ki-stepper-body {
+  padding-top: 0.25rem;
+}
+
+.ki-stepper-empty {
+  font-size: 0.95rem;
+  color: #9ca3af;
+}

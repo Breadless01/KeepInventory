@@ -18,12 +18,44 @@ export function ListBauteile() {
   return window['go']['backend']['App']['ListBauteile']();
 }
 
+export function ListFarben() {
+  return window['go']['backend']['App']['ListFarben']();
+}
+
+export function ListFunktionen() {
+  return window['go']['backend']['App']['ListFunktionen']();
+}
+
+export function ListHerstellungsarten() {
+  return window['go']['backend']['App']['ListHerstellungsarten']();
+}
+
 export function ListKunden() {
   return window['go']['backend']['App']['ListKunden']();
 }
 
+export function ListMaterialien() {
+  return window['go']['backend']['App']['ListMaterialien']();
+}
+
+export function ListOberflaechenbehandlungen() {
+  return window['go']['backend']['App']['ListOberflaechenbehandlungen']();
+}
+
 export function ListProjekte() {
   return window['go']['backend']['App']['ListProjekte']();
+}
+
+export function ListReserven() {
+  return window['go']['backend']['App']['ListReserven']();
+}
+
+export function ListTypen() {
+  return window['go']['backend']['App']['ListTypen']();
+}
+
+export function ListVerschleissteile() {
+  return window['go']['backend']['App']['ListVerschleissteile']();
 }
 
 export function Startup(arg1) {

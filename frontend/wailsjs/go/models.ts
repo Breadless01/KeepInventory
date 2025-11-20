@@ -122,6 +122,54 @@ export namespace domain {
 		    return a;
 		}
 	}
+	export class Farbe {
+	    ID: number;
+	    Name: string;
+	    Symbol: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new Farbe(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.Name = source["Name"];
+	        this.Symbol = source["Symbol"];
+	    }
+	}
+	export class Funktion {
+	    ID: number;
+	    Name: string;
+	    Symbol: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new Funktion(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.Name = source["Name"];
+	        this.Symbol = source["Symbol"];
+	    }
+	}
+	export class Herstellungsart {
+	    ID: number;
+	    Name: string;
+	    Symbol: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new Herstellungsart(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.Name = source["Name"];
+	        this.Symbol = source["Symbol"];
+	    }
+	}
 	export class Kunde {
 	    ID: number;
 	    Name: string;
@@ -136,6 +184,38 @@ export namespace domain {
 	        this.ID = source["ID"];
 	        this.Name = source["Name"];
 	        this.Sitz = source["Sitz"];
+	    }
+	}
+	export class Material {
+	    ID: number;
+	    Name: string;
+	    Symbol: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new Material(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.Name = source["Name"];
+	        this.Symbol = source["Symbol"];
+	    }
+	}
+	export class Oberflaechenbehandlung {
+	    ID: number;
+	    Name: string;
+	    Symbol: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new Oberflaechenbehandlung(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.Name = source["Name"];
+	        this.Symbol = source["Symbol"];
 	    }
 	}
 	export class Projekt {
@@ -173,6 +253,54 @@ export namespace domain {
 		    }
 		    return a;
 		}
+	}
+	export class Reserve {
+	    ID: number;
+	    Name: string;
+	    Symbol: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new Reserve(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.Name = source["Name"];
+	        this.Symbol = source["Symbol"];
+	    }
+	}
+	export class Typ {
+	    ID: number;
+	    Name: string;
+	    Symbol: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new Typ(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.Name = source["Name"];
+	        this.Symbol = source["Symbol"];
+	    }
+	}
+	export class Verschleissteil {
+	    ID: number;
+	    Name: string;
+	    Symbol: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new Verschleissteil(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.Name = source["Name"];
+	        this.Symbol = source["Symbol"];
+	    }
 	}
 
 }

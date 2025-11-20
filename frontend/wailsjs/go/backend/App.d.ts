@@ -12,8 +12,24 @@ export function CreateProjekt(arg1:backend.CreateProjektRequest):Promise<domain.
 
 export function ListBauteile():Promise<Array<domain.Bauteil>>;
 
+export function ListFarben():Promise<Array<domain.Farbe>>;
+
+export function ListFunktionen():Promise<Array<domain.Funktion>>;
+
+export function ListHerstellungsarten():Promise<Array<domain.Herstellungsart>>;
+
 export function ListKunden():Promise<Array<domain.Kunde>>;
 
+export function ListMaterialien():Promise<Array<domain.Material>>;
+
+export function ListOberflaechenbehandlungen():Promise<Array<domain.Oberflaechenbehandlung>>;
+
 export function ListProjekte():Promise<Array<domain.Projekt>>;
+
+export function ListReserven():Promise<Array<domain.Reserve>>;
+
+export function ListTypen():Promise<Array<domain.Typ>>;
+
+export function ListVerschleissteile():Promise<Array<domain.Verschleissteil>>;
 
 export function Startup(arg1:context.Context):Promise<void>;
