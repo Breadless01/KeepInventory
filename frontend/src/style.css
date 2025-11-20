@@ -1,0 +1,44 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Body-Reset */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", system-ui, sans-serif;
+  background: #f8f9fc;
+  color: #222;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Grundlayout: Sidebar links, Content rechts */
+.ki-shell {
+  display: flex;
+  min-height: 100vh;
+  background: #f8f9fc;
+}
+
+/* Rechte Seite (Views) */
+.ki-main {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Header über den Views */
+.ki-header {
+  margin-bottom: 0.5rem;
+}
+
+.ki-header-title {
+  margin: 0;
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #222;
+}
