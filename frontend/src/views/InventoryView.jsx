@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ListBauteile } from "../../wailsjs/go/backend/App.js";
-import { Button } from "../components/ui/Button.jsx";
+import { Plus } from "lucide-react";
 
 export default function InventoryView() {
   const [bauteile, setBauteile] = useState([]);
@@ -18,6 +18,11 @@ export default function InventoryView() {
       console.error(e);
       setError(String(e));
     }
+  }
+
+  async function handleNew() {
+    // Placeholder for creating a new Bauteil
+    alert("Neues Bauteil anlegen - Funktion noch nicht implementiert.");
   }
 
   useEffect(() => {
@@ -53,7 +58,12 @@ export default function InventoryView() {
     <div className="ki-content">
 
       <div className="ki-card">
-        <h2 className="ki-card-title">Bauteile</h2>
+        <div className="ki-header-row">
+          <h2 className="ki-card-title">Bauteile</h2>
+          <button className="ki-add-btn" title="Neues Bauteil anlegen" onClick={handleNew}>
+            <Plus size={16} strokeWidth={4} />
+          </button>
+        </div>
 
         {error && <div className="ki-error">{error}</div>}
 

@@ -42,3 +42,37 @@ body {
   font-weight: 700;
   color: #222;
 }
+
+
+.ki-header-row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.ki-add-btn {
+  --btn-size: 1.5rem;
+  background: #e53935;          /* modernes Rot */
+  color: white;
+  border: none;
+  width: var(--btn-size);
+  height: var(--btn-size);
+  border-radius: 50%;
+  line-height: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: all 0.15s ease-in-out;
+}
+
+.ki-add-btn:hover {
+  background: #c62828;
+  transform: translateY(-1px);
+}
+
+.ki-add-btn:active {
+  background: #b71c1c;
+  transform: translateY(0px);
+}
