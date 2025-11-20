@@ -1,0 +1,74 @@
+/* Overlay */
+.ki-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(2px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+/* Modal Fenster */
+.ki-modal {
+  background: #fff;
+  width: 420px;
+  max-width: 90%;
+  border-radius: 10px;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.25);
+  animation: ki-modal-pop 0.15s ease-out;
+}
+
+/* Animation */
+@keyframes ki-modal-pop {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Header */
+.ki-modal-header {
+  padding: 1rem 1.2rem;
+  border-bottom: 1px solid #e5e5e5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ki-modal-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+/* Close Button */
+.ki-modal-close {
+  font-size: 22px;
+  background: none;
+  border: none;
+  color: #444;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  transition: 0.15s;
+}
+
+.ki-modal-close:hover {
+  background: #eee;
+}
+
+/* Body Inhalt */
+.ki-modal-body {
+  padding: 1.2rem;
+  font-size: 0.95rem;
+  color: #333;
+}

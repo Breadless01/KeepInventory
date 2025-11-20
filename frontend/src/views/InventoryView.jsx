@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ListBauteile } from "../../wailsjs/go/backend/App.js";
+import { Modal } from "../components/ui/Modal.jsx";
 import { Plus } from "lucide-react";
 
 export default function InventoryView() {
@@ -9,6 +10,7 @@ export default function InventoryView() {
   const [beschreibung, setBeschreibung] = useState("");
   const [bestand, setBestand] = useState(0);
   const [error, setError] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
 
   async function loadBauteile() {
     try {
@@ -60,7 +62,7 @@ export default function InventoryView() {
       <div className="ki-card">
         <div className="ki-header-row">
           <h2 className="ki-card-title">Bauteile</h2>
-          <button className="ki-add-btn" title="Neues Bauteil anlegen" onClick={handleNew}>
+          <button className="ki-add-btn" title="Neues Bauteil anlegen" onClick={() => setModalOpen(true)}>
             <Plus size={16} strokeWidth={4} />
           </button>
         </div>
@@ -97,6 +99,11 @@ export default function InventoryView() {
           </div>
         )}
       </div>
+      {modalOpen && (
+        <Modal title="Neues Bauteil" onClose={() => setModalOpen(false)}>
+          <p>Hier kannst du später ein Bauteil anlegen.</p>
+        </Modal>
+      )}
     </div>
   );
 }
