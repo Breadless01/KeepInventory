@@ -1,0 +1,189 @@
+/* Card-Container */
+.ki-dt-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+  padding: 0;
+  overflow: hidden;
+  font-size: 0.9rem;
+}
+
+/* Header-Zeile */
+.ki-dt-header {
+  display: flex;
+  padding: 0.9rem 1.5rem;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.ki-dt-cell {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.25rem;
+}
+
+/* Header-Zellen */
+.ki-dt-cell--head {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6b7280;
+}
+
+/* Body */
+.ki-dt-body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Zeilen */
+.ki-dt-row {
+  display: flex;
+  padding: 0.7rem 1.5rem;
+  align-items: center;
+}
+
+/* Zebra-Effekt */
+.ki-dt-row:nth-child(odd) {
+  background: #ffffff;
+}
+
+.ki-dt-row:nth-child(even) {
+  background: #f9fbff;
+}
+
+/* Hover */
+.ki-dt-row:hover {
+  background: #f1f5ff;
+}
+
+/* Leere Zeile */
+.ki-dt-row--empty {
+  justify-content: center;
+  color: #9ca3af;
+}
+
+/* Leerer Table insgesamt */
+.ki-dt-empty {
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  background: #f9fafb;
+  color: #9ca3af;
+}
+
+/* Typische Status-Badge (wie Payment Status im Screenshot) */
+.ki-dt-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #ffffff;
+  min-width: 110px;
+}
+
+/* Varianten */
+.ki-dt-badge--success {
+  background: #16a34a;
+}
+
+.ki-dt-badge--warning {
+  background: #f59e0b;
+}
+
+.ki-dt-badge--info {
+  background: #2563eb;
+}
+
+/* Action-Buttons (Edit/Delete) */
+.ki-dt-actions {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: flex-end;
+}
+
+.ki-dt-action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: #e0e7ff;
+  color: #1d4ed8;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.ki-dt-action-btn--danger {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.ki-dt-action-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
+}
+
+/* Monospace für Nummern / Beträge / Sachnummern */
+.ki-dt-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+
+/* Footer / Pagination-Bar */
+.ki-dt-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.7rem 1.5rem 0.9rem;
+  border-top: 1px solid #e5e7eb;
+  background: #ffffff;
+}
+
+.ki-dt-page-info {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.ki-dt-pagination {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ki-dt-page-btn {
+  min-width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  background: #e5e7eb;
+  color: #374151;
+  font-size: 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+.ki-dt-page-btn:hover:not(:disabled) {
+  background: #e53935;
+  color: #ffffff;
+  box-shadow: 0 6px 14px rgba(229, 57, 53, 0.35);
+  transform: translateY(-1px);
+}
+
+.ki-dt-page-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.ki-dt-page-indicator {
+  font-size: 0.8rem;
+  color: #4b5563;
+}

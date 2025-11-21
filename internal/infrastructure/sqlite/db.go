@@ -19,22 +19,20 @@ func OpenDB(path string) *sql.DB {
 
 	if _, err := db.Exec(`
         CREATE TABLE IF NOT EXISTS bauteile (
-            id      INTEGER PRIMARY KEY AUTOINCREMENT,
-            teil_name   TEXT NOT NULL,
-            kunde_id    INTEGER,
-            projekt_id  INTEGER,
-            erstelldatum TEXT NOT NULL,
-
-            typ_id                     INTEGER NOT NULL,
-            herstellungsart_id         INTEGER NOT NULL,
-            verschleissteil_id         INTEGER NOT NULL,
-            funktion_id                INTEGER NOT NULL,
-            material_id                INTEGER NOT NULL,
-            oberflaechenbehandlung_id  INTEGER NOT NULL,
-            farbe_id                   INTEGER NOT NULL,
-            reserve_id                 INTEGER NOT NULL,
-
-            sachnummer TEXT NOT NULL
+            id                        INTEGER PRIMARY KEY AUTOINCREMENT,
+            teil_name                 TEXT    NOT NULL,
+            kunde_id                  INTEGER REFERENCES kunden (id) ON DELETE SET NULL,
+            projekt_id                INTEGER REFERENCES projekte (id) ON DELETE SET NULL,
+            erstelldatum              TEXT    NOT NULL,
+            typ_id                    INTEGER NOT NULL,
+            herstellungsart_id        INTEGER NOT NULL,
+            verschleissteil_id        INTEGER NOT NULL,
+            funktion_id               INTEGER NOT NULL,
+            material_id               INTEGER NOT NULL,
+            oberflaechenbehandlung_id INTEGER NOT NULL,
+            farbe_id                  INTEGER NOT NULL,
+            reserve_id                INTEGER NOT NULL,
+            sachnummer                TEXT    NOT NULL
         );
     `); err != nil {
 		log.Fatalf("konnte Tabelle bauteile nicht anlegen: %v", err)
@@ -134,8 +132,7 @@ func OpenDB(path string) *sql.DB {
         CREATE TABLE IF NOT EXISTS projekte (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
-            kunde_id INTEGER NOT NULL,
-            FOREIGN KEY (kunde_id) REFERENCES kunden(id) ON DELETE RESTRICT
+            kunde TEXT
         );
     `); err != nil {
 		log.Fatalf("konnte Tabelle projekte nicht anlegen: %v", err)

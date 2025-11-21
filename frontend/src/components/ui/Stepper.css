@@ -57,7 +57,6 @@
 
   border: 1px solid #e5e7eb;
   background: white;
-  cursor: pointer;
   font-size: 0.95rem;
   color: #e5e7eb;;
 
@@ -69,6 +68,7 @@
 }
 
 .ki-stepper-step:hover {
+  cursor: default;
   border: 1px solid #ffe5e5;
   background: #ffe5e5;
   color: #c20000;

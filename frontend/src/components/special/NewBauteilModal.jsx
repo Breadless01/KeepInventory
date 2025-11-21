@@ -13,6 +13,8 @@ import {
   ListOberflaechenbehandlungen,
   ListFarben,
   ListReserven,
+  ListKunden,
+  ListProjekte
 } from "../../../wailsjs/go/backend/App";
 
 
@@ -31,6 +33,10 @@ export function NewBauteilModal({ open, onClose, onCreated }) {
   const [farben, setFarben] = useState([]);
   const [reserven, setReserven] = useState([]);
 
+  // Kunden und Projekte
+  const [kunden, setKunden] = useState([]);
+  const [projekte, setProjekte] = useState([]);
+
   // Formularwerte
   const [teilName, setTeilName] = useState("");
   const [kundeID, setKundeID] = useState("");
@@ -44,36 +50,18 @@ export function NewBauteilModal({ open, onClose, onCreated }) {
   const [oberfID, setOberfID] = useState("");
   const [farbeID, setFarbeID] = useState("");
   const [reserveID, setReserveID] = useState("");
-  const [steps, setSteps] = useState([
-      {
-        id: 1,
-        label: "Basisdaten",
-        content: <div>Hier kommen die Basisdaten rein.</div>,
-      },
-      {
-        id: 2,
-        label: "Merkmale",
-        content: <div>Hier kommen die Merkmale rein.</div>,
-      },
-      {
-        id: 3,
-        label: "Details",
-        content: <div>Hier kommen die Details rein.</div>,
-      },
-    ]);
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [nextId, setNextId] = useState(3);
+  const [currentStep, setCurrentStep] = useState(0);
 
 
-  // Stammdaten laden, wenn Modal geöffnet wird
   useEffect(() => {
     if (!open) return;
 
-    async function loadStammdaten() {
+    setCurrentStep(0);
+    setError("");
+
+    async function loadDaten() {
       try {
         setLoading(true);
-        setError("");
-
         const [
           t,
           a,
@@ -83,6 +71,8 @@ export function NewBauteilModal({ open, onClose, onCreated }) {
           o,
           c,
           r,
+          kunde,
+          projekt
         ] = await Promise.all([
           ListTypen(),
           ListHerstellungsarten(),
@@ -92,6 +82,8 @@ export function NewBauteilModal({ open, onClose, onCreated }) {
           ListOberflaechenbehandlungen(),
           ListFarben(),
           ListReserven(),
+          ListKunden(),
+          ListProjekte()
         ]);
 
         setTypen(t || []);
@@ -102,6 +94,8 @@ export function NewBauteilModal({ open, onClose, onCreated }) {
         setOberflaechen(o || []);
         setFarben(c || []);
         setReserven(r || []);
+        setKunden(kunde || []);
+        setProjekte(projekt || []);
       } catch (e) {
         console.error(e);
         setError(String(e));
@@ -110,10 +104,10 @@ export function NewBauteilModal({ open, onClose, onCreated }) {
       }
     }
 
-    loadStammdaten();
+    loadDaten();
   }, [open]);
 
-  // Preview der Sachnummer – Struktur + Platzhalter für Hex-Suffix
+  // Sachnummer-Preview auf Basis der ausgewählten Symbole
   const sachnummerPreview = useMemo(() => {
     if (
       !typID ||
@@ -143,11 +137,9 @@ export function NewBauteilModal({ open, onClose, onCreated }) {
       return "Auswahl unvollständig oder Stammdaten nicht geladen.";
     }
 
-    // Wir nutzen die Symbol-Werte, so wie im Backend
     const keyPart = `${typ.Symbol}-${art.Symbol}-${versch.Symbol}-${fun.Symbol}-${mat.Symbol}-${oberf.Symbol}-${farbe.Symbol}-${res.Symbol}`;
 
-    // Hex-Suffix wird im Backend final aus der DB berechnet.
-    // Hier zeigen wir nur die Struktur + Platzhalter.
+    // echtes Hex-Suffix kommt aus dem Backend → hier nur Dummy/Struktur
     const fakeSuffix = "????";
 
     return `${keyPart}-${fakeSuffix}`;
@@ -174,11 +166,12 @@ export function NewBauteilModal({ open, onClose, onCreated }) {
     e?.preventDefault();
     setError("");
 
-    // minimale Validierung
     if (!teilName.trim()) {
       setError("Bitte einen Teilnamen eingeben.");
+      setCurrentStep(0);
       return;
     }
+
     if (
       !typID ||
       !artID ||
@@ -190,6 +183,7 @@ export function NewBauteilModal({ open, onClose, onCreated }) {
       !reserveID
     ) {
       setError("Bitte alle Merkmalsfelder auswählen.");
+      setCurrentStep(1);
       return;
     }
 
@@ -198,8 +192,8 @@ export function NewBauteilModal({ open, onClose, onCreated }) {
 
       const req = {
         TeilName: teilName,
-        KundeID: kundeID,
-        ProjektID: projektID,
+        KundeID: kundeID ? Number(kundeID) : undefined,
+        ProjektID: projektID ? Number(projektID) : undefined,
 
         TypID: Number(typID),
         HerstellungsartID: Number(artID),
@@ -239,24 +233,48 @@ export function NewBauteilModal({ open, onClose, onCreated }) {
     }
   }
 
+  function goNextStep() {
+    if (currentStep === 0) {
+      if (!teilName.trim()) {
+        setError("Bitte einen Teilnamen eingeben.");
+        return;
+      }
+    }
+    if (currentStep === 1) {
+      if (
+        !typID ||
+        !artID ||
+        !verschID ||
+        !funktionID ||
+        !materialID ||
+        !oberfID ||
+        !farbeID ||
+        !reserveID
+      ) {
+        setError("Bitte alle Merkmalsfelder auswählen.");
+        return;
+      }
+    }
+    setError("");
+    setCurrentStep((s) => Math.min(s + 1, 2));
+  }
+
+  function goPrevStep() {
+    setError("");
+    setCurrentStep((s) => Math.max(s - 1, 0));
+  }
+
   if (!open) return null;
 
-  return (
-    <Modal title="Neues Bauteil" onClose={onClose}>
-      {loading ? (
-        <div>Stammdaten werden geladen…</div>
-      ) : (
-        <form className="ki-form" onSubmit={handleSubmit}>
-          <Stepper
-            steps={steps}
-            currentIndex={currentIndex}
-            onStepChange={setCurrentIndex}
-            showLabels={true}
-          />
-          {error && <div className="ki-error">{error}</div>}
-
+  // Step-Inhalte definieren
+  const steps = [
+    {
+      id: "basis",
+      label: "Basisdaten",
+      content: (
+        <>
           <div className="ki-form-group">
-            <label>Teil-Name</label>
+            <label>Teil-Name*</label>
             <input
               className="ki-input"
               value={teilName}
@@ -265,29 +283,46 @@ export function NewBauteilModal({ open, onClose, onCreated }) {
             />
           </div>
 
-          <div className="ki-form-row">
-            <div className="ki-form-group">
-              <label>Kunde-ID</label>
-              <input
-                className="ki-input"
-                value={kundeID}
-                onChange={(e) => setKundeID(e.target.value)}
-                placeholder="optional"
-              />
-            </div>
-            <div className="ki-form-group">
-              <label>Projekt-ID</label>
-              <input
-                className="ki-input"
-                value={projektID}
-                onChange={(e) => setProjektID(e.target.value)}
-                placeholder="optional"
-              />
-            </div>
+          <div className="ki-form-group">
+            <label>Kunde</label>
+            <select
+              className="ki-input"
+              value={kundeID}
+              onChange={(e) => setKundeID(e.target.value)}
+              required
+            >
+              <option value="">— wählen —</option>
+              {kunden.map((kunde) => (
+                <option key={kunde.ID} value={kunde.ID}>
+                  {kunde.Name} {kunde.Sitz && (`– ${kunde.Sitz}`)}
+                </option>
+              ))}
+            </select>
           </div>
-
-          <hr className="ki-separator" />
-
+          <div className="ki-form-group">
+            <label>Projekt</label>
+            <select
+              className="ki-input"
+              value={projektID}
+              onChange={(e) => setProjektID(e.target.value)}
+              required
+            >
+              <option value="">— wählen —</option>
+              {projekte.map((projekt) => (
+                <option key={projekt.ID} value={projekt.ID}>
+                  {projekt.Name} {projekt.Kunde && (`– ${projekt.Kunde}`)}
+                </option>
+              ))}
+            </select>
+          </div>
+        </>
+      ),
+    },
+    {
+      id: "merkmale",
+      label: "Merkmale",
+      content: (
+        <>
           <div className="ki-form-row">
             <div className="ki-form-group">
               <label>Typ</label>
@@ -299,9 +334,9 @@ export function NewBauteilModal({ open, onClose, onCreated }) {
               >
                 <option value="">— wählen —</option>
                 {typen.map((t) => (
-                    <option key={t.ID} value={t.ID}>
-                        {t.Symbol} – {t.Name}
-                    </option>
+                  <option key={t.ID} value={t.ID}>
+                    {t.Symbol} – {t.Name}
+                  </option>
                 ))}
               </select>
             </div>
@@ -431,16 +466,41 @@ export function NewBauteilModal({ open, onClose, onCreated }) {
               </select>
             </div>
           </div>
-
+        </>
+      ),
+    },
+    {
+      id: "sachnummer",
+      label: "Sachnummer",
+      content: (
+        <>
           <div className="ki-form-group">
             <label>Sachnummer (Vorschau)</label>
-            <div className="ki-sachnummer-preview">
-              {sachnummerPreview}
-            </div>
+            <div className="ki-sachnummer-preview">{sachnummerPreview}</div>
             <div className="ki-sachnummer-hint">
-              Finale Sachnummer (inkl. Hex-Suffix) wird im Backend vergeben.
+              Die finale Sachnummer (inkl. Hex-Suffix) wird beim Speichern im
+              Backend berechnet.
             </div>
           </div>
+        </>
+      ),
+    },
+  ];
+
+  return (
+    <Modal title="Neues Bauteil" onClose={onClose}>
+      {loading ? (
+        <div>Stammdaten werden geladen…</div>
+      ) : (
+        <form className="ki-form" onSubmit={handleSubmit}>
+          {error && <div className="ki-error">{error}</div>}
+
+          <Stepper
+            steps={steps}
+            currentIndex={currentStep}
+            onStepChange={setCurrentStep}
+            showLabels={false}
+          />
 
           <div className="ki-form-actions">
             <button
@@ -451,13 +511,36 @@ export function NewBauteilModal({ open, onClose, onCreated }) {
             >
               Abbrechen
             </button>
-            <button
-              type="submit"
-              className="ki-btn-primary"
-              disabled={saving}
-            >
-              {saving ? "Speichern…" : "Bauteil anlegen"}
-            </button>
+
+            {currentStep > 0 && (
+              <button
+                type="button"
+                className="ki-btn-secondary"
+                onClick={goPrevStep}
+                disabled={saving}
+              >
+                Zurück
+              </button>
+            )}
+
+            {currentStep < steps.length - 1 ? (
+              <button
+                type="button"
+                className="ki-btn-primary"
+                onClick={goNextStep}
+                disabled={saving}
+              >
+                Weiter
+              </button>
+            ) : (
+              <button
+                type="submit"
+                className="ki-btn-primary"
+                disabled={saving}
+              >
+                {saving ? "Speichern…" : "Bauteil anlegen"}
+              </button>
+            )}
           </div>
         </form>
       )}

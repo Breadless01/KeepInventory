@@ -1,5 +1,6 @@
 import "./stepper.css";
 import { Check } from "lucide-react"
+import { useHover } from "@uidotdev/usehooks";
 
 export function Stepper({
   steps,
@@ -13,8 +14,6 @@ export function Stepper({
   const maxIndex = steps.length > 0 ? steps.length - 1 : 0;
   const progress =
     maxIndex > 0 ? Math.min(100, Math.max(0, (currentIndex / maxIndex) * 100)) : 0;
-
-
   return (
     <div className="ki-stepper">
       <div className="ki-stepper-header">
@@ -38,8 +37,7 @@ export function Stepper({
                     (isActive ? " ki-stepper-step--active" : "") +
                     (isDone ? " ki-stepper-step--done" : "")
                     }
-                    type="button"
-                    onClick={() => onStepChange(index)}
+                    type="button"            
                 >
                     {!showLabels && (
                         <span className="ki-stepper-circle">

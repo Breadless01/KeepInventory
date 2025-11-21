@@ -2,7 +2,7 @@ package sqlite
 
 import (
 	"database/sql"
-	"time"
+	"log"
 
 	"KeepInventory/internal/application"
 	"KeepInventory/internal/domain"
@@ -18,6 +18,7 @@ func NewBauteilRepositorySQLite(db *sql.DB) application.BauteilRepository {
 }
 
 func (r *BauteilRepositorySQLite) Create(b *domain.Bauteil) (*domain.Bauteil, error) {
+	log.Println(b)
 	res, err := r.db.Exec(`
         INSERT INTO bauteile (
             teil_name, kunde_id, projekt_id, erstelldatum,
@@ -27,9 +28,9 @@ func (r *BauteilRepositorySQLite) Create(b *domain.Bauteil) (*domain.Bauteil, er
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `,
 		b.TeilName,
-		b.KundeID,
-		b.ProjektID,
-		b.Erstelldatum.Format(time.DateTime),
+		b.KundeId,
+		b.ProjektId,
+		b.Erstelldatum,
 		b.TypID,
 		b.HerstellungsartID,
 		b.VerschleissteilID,
@@ -41,6 +42,7 @@ func (r *BauteilRepositorySQLite) Create(b *domain.Bauteil) (*domain.Bauteil, er
 		b.Sachnummer,
 	)
 	if err != nil {
+		log.Println(err)
 		return nil, err
 	}
 
@@ -54,13 +56,30 @@ func (r *BauteilRepositorySQLite) Create(b *domain.Bauteil) (*domain.Bauteil, er
 
 func (r *BauteilRepositorySQLite) FindAll() ([]*domain.Bauteil, error) {
 	rows, err := r.db.Query(`
-        SELECT
-            id, teil_name, kunde_id, projekt_id, erstelldatum,
-            typ_id, herstellungsart_id, verschleissteil_id,
-            funktion_id, material_id, oberflaechenbehandlung_id,
-            farbe_id, reserve_id, sachnummer
-        FROM bauteile
-        ORDER BY teil_name DESC
+        SELECT 
+			b.id,
+			b.teil_name,
+			b.kunde_id,
+			k.name,
+			b.projekt_id,
+			p.name,
+			b.erstelldatum,
+			b.typ_id,
+			b.herstellungsart_id,
+			b.verschleissteil_id,
+			b.funktion_id,
+			b.material_id,
+			b.oberflaechenbehandlung_id,
+			b.farbe_id,
+			b.reserve_id,
+			b.sachnummer
+		FROM bauteile b
+			LEFT JOIN
+			kunden k ON b.kunde_id = k.id
+			LEFT JOIN
+			projekte p ON b.projekt_id = p.id
+		ORDER BY teil_name DESC;
+
     `)
 	if err != nil {
 		return nil, err
@@ -70,12 +89,15 @@ func (r *BauteilRepositorySQLite) FindAll() ([]*domain.Bauteil, error) {
 	result := make([]*domain.Bauteil, 0)
 
 	for rows.Next() {
+		log.Println(rows)
 		var b domain.Bauteil
 		if err := rows.Scan(
 			&b.ID,
 			&b.TeilName,
-			&b.KundeID,
-			&b.ProjektID,
+			&b.KundeId,
+			&b.Kunde,
+			&b.ProjektId,
+			&b.Projekt,
 			&b.Erstelldatum,
 			&b.TypID,
 			&b.HerstellungsartID,
@@ -94,6 +116,7 @@ func (r *BauteilRepositorySQLite) FindAll() ([]*domain.Bauteil, error) {
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
+	log.Println(result)
 	return result, nil
 }
 

@@ -16,14 +16,10 @@ func NewProjektService(projRepo ProjektRepository, kundeRepo KundeRepository) *P
 	}
 }
 
-func (s *ProjektService) CreateProjekt(name string, kundeID int64) (*domain.Projekt, error) {
-	if _, err := s.kundeRepo.FindByID(kundeID); err != nil {
-		return nil, err
-	}
-
+func (s *ProjektService) CreateProjekt(name string, kunde string) (*domain.Projekt, error) {
 	p := &domain.Projekt{
-		Name:    name,
-		KundeID: kundeID,
+		Name:  name,
+		Kunde: kunde,
 	}
 	return s.projRepo.Create(p)
 }
@@ -39,8 +35,8 @@ func (s *ProjektService) ListProjekte() ([]*domain.Projekt, error) {
 	return list, nil
 }
 
-func (s *ProjektService) ListProjekteByKunde(kundeID int64) ([]*domain.Projekt, error) {
-	list, err := s.projRepo.FindByKundeID(kundeID)
+func (s *ProjektService) ListProjekteByKunde(kunde string) ([]*domain.Projekt, error) {
+	list, err := s.projRepo.FindByKunde(kunde)
 	if err != nil {
 		return nil, err
 	}

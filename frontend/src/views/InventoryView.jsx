@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { ListBauteile } from "../../wailsjs/go/backend/App.js";
 import { NewBauteilModal } from "../components/special/NewBauteilModal.jsx";
 import { Plus } from "lucide-react";
+import { FlexTable } from "../components/ui/FlexTable.jsx";
+
 
 export default function InventoryView() {
   const [bauteile, setBauteile] = useState([]);
@@ -11,6 +13,15 @@ export default function InventoryView() {
   const [bestand, setBestand] = useState(0);
   const [error, setError] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
+  const columns = [
+    { id: "id", label: "ID", field: "ID", width: 0.5, align: "center" },
+    { id: "name", label: "TeilName", field: "TeilName", width: 2 },
+    { id: "achnummer", label: "Sachnummer", field: "Sachnummer", width: 2 },
+    { id: "kunde", label: "Kunde", field: "Kunde", width: 2 },
+    { id: "projekt", label: "Projekt", field: "Projekt", width: 2 },
+    { id: "erstelldatum", label: "Erstelldatum", field: "Erstelldatum", width: 2 },
+  ];
+
   
   async function loadBauteile() {
     try {
@@ -41,6 +52,8 @@ export default function InventoryView() {
   }, []);
 
   const safeBauteile = bauteile || [];
+  console.log(safeBauteile);
+  
 
   return (
     <div className="ki-content">
@@ -55,35 +68,7 @@ export default function InventoryView() {
 
         {error && <div className="ki-error">{error}</div>}
 
-        {(!bauteile || bauteile.length === 0) ? (
-          <div className="ki-empty">Noch keine Bauteile angelegt.</div>
-        ) : (
-          <div className="ki-table">
-            <div className="ki-table-head">
-              <div className="ki-table-row">
-                <div className="ki-table-cell ki-table-cell--head">Teil</div>
-                <div className="ki-table-cell ki-table-cell--head">Sachnummer</div>
-                <div className="ki-table-cell ki-table-cell--head">Kunde</div>
-                <div className="ki-table-cell ki-table-cell--head">Projekt</div>
-                <div className="ki-table-cell ki-table-cell--head">Erstellt</div>
-              </div>
-            </div>
-
-            <div className="ki-table-body">
-              {bauteile.map((b) => (
-                <div className="ki-table-row" key={b.ID}>
-                  <div className="ki-table-cell">{b.TeilName}</div>
-                  <div className="ki-table-cell ki-mono">{b.Sachnummer}</div>
-                  <div className="ki-table-cell">{b.KundeID || "—"}</div>
-                  <div className="ki-table-cell">{b.ProjektID || "—"}</div>
-                  <div className="ki-table-cell">
-                    {formatDate(b.Erstelldatum)}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        <FlexTable columns={columns} data={safeBauteile} />
       </div>
       <NewBauteilModal
         open={modalOpen}

@@ -1,27 +1,27 @@
 // frontend/src/views/ProjekteView.jsx
 import { useEffect, useState } from "react";
 import { Button } from "../components/ui/Button.jsx";
+import { FlexTable } from "../components/ui/FlexTable.jsx";
 import {
   ListProjekte,
   CreateProjekt,
-  ListKunden,
 } from "../../wailsjs/go/backend/App";
 
 export default function ProjekteView() {
   const [projekte, setProjekte] = useState([]);
-  const [kunden, setKunden] = useState([]);
   const [name, setName] = useState("");
-  const [kundeID, setKundeID] = useState("");
+  const [kunde, setKunde] = useState([]);
   const [error, setError] = useState("");
+  const columns = [
+    { id: "id", label: "ID", field: "ID", width: 0.5, align: "center" },
+    { id: "name", label: "Name", field: "Name", width: 2 },
+    { id: "kunde", label: "Kunde", field: "Kunde", width: 2 },
+  ];
 
-  async function loadData() {
+  async function loadProjekte() {
     try {
-      const [projList, kundenList] = await Promise.all([
-        ListProjekte(),
-        ListKunden(),
-      ]);
+      const projList = await ListProjekte();
       setProjekte(projList || []);
-      setKunden(kundenList || []);
     } catch (e) {
       console.error(e);
       setError(String(e));
@@ -29,26 +29,21 @@ export default function ProjekteView() {
   }
 
   useEffect(() => {
-    loadData();
+    loadProjekte();
   }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
 
-    if (!kundeID) {
-      setError("Bitte einen Kunden auswählen.");
-      return;
-    }
-
     try {
       await CreateProjekt({
         name,
-        kundeID: Number(kundeID),
+        kunde,
       });
 
       setName("");
-      setKundeID("");
+      setKunde("");
       await loadData();
     } catch (e) {
       console.error(e);
@@ -57,12 +52,7 @@ export default function ProjekteView() {
   }
 
   const safeProjekte = projekte || [];
-  const safeKunden = kunden || [];
-
-  function getKundenName(id) {
-    const k = safeKunden.find((c) => c.ID === id);
-    return k ? k.Name : `Kunde #${id}`;
-  }
+  
 
   return (
     <div className="ki-content">
@@ -78,51 +68,20 @@ export default function ProjekteView() {
             onChange={(e) => setName(e.target.value)}
             required
           />
-
-          <select
+          <input
             className="ki-input"
-            value={kundeID}
-            onChange={(e) => setKundeID(e.target.value)}
+            placeholder="Projektkunde"
+            value={kunde}
+            onChange={(e) => setKunde(e.target.value)}
             required
-          >
-            <option value="">Kunde auswählen…</option>
-            {safeKunden.map((k) => (
-              <option key={k.ID} value={k.ID}>
-                {k.Name} {k.Sitz ? `(${k.Sitz})` : ""}
-              </option>
-            ))}
-          </select>
-
+          />
           <Button onClick={handleSubmit}>Projekt anlegen</Button>
         </form>
       </div>
 
       <div className="ki-card">
         <h2 className="ki-card-title">Projekte</h2>
-
-        {safeProjekte.length === 0 ? (
-          <div className="ki-empty">Noch keine Projekte angelegt.</div>
-        ) : (
-          <div className="ki-list">
-            {safeProjekte.map((p) => (
-              <div className="ki-list-item" key={p.ID}>
-                <div className="ki-list-header">
-                  <span className="ki-list-name">{p.Name}</span>
-                  <span className="ki-list-id">#{p.ID}</span>
-                </div>
-
-                <div className="ki-list-meta">
-                  <span>
-                    Kunde:{" "}
-                    <span className="ki-badge">
-                      {getKundenName(p.KundeID)}
-                    </span>
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        <FlexTable columns={columns} data={safeProjekte} />
       </div>
     </div>
   );

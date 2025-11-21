@@ -58,11 +58,9 @@ type KundeRepository interface {
 	FindAll() ([]*domain.Kunde, error)
 }
 
-/* NEU: ProjektRepository */
-
 type ProjektRepository interface {
 	Create(p *domain.Projekt) (*domain.Projekt, error)
 	FindByID(id int64) (*domain.Projekt, error)
 	FindAll() ([]*domain.Projekt, error)
-	FindByKundeID(kundeID int64) ([]*domain.Projekt, error)
+	FindByKunde(kunde string) ([]*domain.Projekt, error)
 }

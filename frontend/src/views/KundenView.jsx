@@ -1,6 +1,8 @@
 // frontend/src/views/KundenView.jsx
 import { useEffect, useState } from "react";
 import { Button } from "../components/ui/Button.jsx";
+import { FlexTable } from "../components/ui/FlexTable.jsx";
+
 import {
   ListKunden,
   CreateKunde,
@@ -11,6 +13,11 @@ export default function KundenView() {
   const [name, setName] = useState("");
   const [sitz, setSitz] = useState("");
   const [error, setError] = useState("");
+  const columns = [
+    { id: "id", label: "ID", field: "ID", width: 0.5, align: "center" },
+    { id: "name", label: "Name", field: "Name", width: 2 },
+    { id: "sitz", label: "Sitz", field: "Sitz", width: 2 },
+  ];
 
   async function loadKunden() {
     try {
@@ -74,29 +81,7 @@ export default function KundenView() {
 
       <div className="ki-card">
         <h2 className="ki-card-title">Kunden</h2>
-
-        {safeKunden.length === 0 ? (
-          <div className="ki-empty">Noch keine Kunden angelegt.</div>
-        ) : (
-          <div className="ki-list">
-            {safeKunden.map((k) => (
-              <div className="ki-list-item" key={k.ID}>
-                <div className="ki-list-header">
-                  <span className="ki-list-name">{k.Name}</span>
-                  <span className="ki-list-id">#{k.ID}</span>
-                </div>
-                <div className="ki-list-meta">
-                  <span>
-                    Sitz:{" "}
-                    <span className="ki-badge">
-                      {k.Sitz || "—"}
-                    </span>
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        <FlexTable columns={columns} data={safeKunden} />
       </div>
     </div>
   );

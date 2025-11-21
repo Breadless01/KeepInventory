@@ -32,8 +32,8 @@ func (a *App) Startup(ctx context.Context) {
 // View Models für Requests/Responses
 type CreateBauteilRequest struct {
 	TeilName  string `json:"TeilName"`
-	KundeID   int64  `json:"KundeID"`
-	ProjektID int64  `json:"ProjektID"`
+	KundeId   int64  `json:"KundeId"`
+	ProjektId int64  `json:"ProjektId"`
 
 	TypID                    int64 `json:"TypID"`
 	HerstellungsartID        int64 `json:"HerstellungsartID"`
@@ -48,8 +48,8 @@ type CreateBauteilRequest struct {
 func (a *App) CreateBauteil(req CreateBauteilRequest) (*domain.Bauteil, error) {
 	return a.BauteilService.CreateBauteil(application.CreateBauteilInput{
 		TeilName:                 req.TeilName,
-		KundeID:                  req.KundeID,
-		ProjektID:                req.ProjektID,
+		KundeId:                  req.KundeId,
+		ProjektId:                req.ProjektId,
 		TypID:                    req.TypID,
 		HerstellungsartID:        req.HerstellungsartID,
 		VerschleissteilID:        req.VerschleissteilID,
@@ -82,14 +82,14 @@ func (a *App) ListKunden() ([]*domain.Kunde, error) {
 }
 
 type CreateProjektRequest struct {
-	Name     string `json:"name"`
-	KundenID int64  `json:"kunden_id"`
+	Name  string `json:"name"`
+	Kunde string `json:"kunde"`
 }
 
 func (a *App) CreateProjekt(req CreateProjektRequest) (*domain.Projekt, error) {
 	return a.ProjektService.CreateProjekt(
 		req.Name,
-		req.KundenID,
+		req.Kunde,
 	)
 }
 

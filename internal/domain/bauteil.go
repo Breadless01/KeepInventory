@@ -1,14 +1,13 @@
 package domain
 
-import "time"
-
-// Bauteil repräsentiert ein einzelnes Inventar-Teil in deinem Lager.
 type Bauteil struct {
-	ID           int64     `json:"ID"`
-	TeilName     string    `json:"TeilName"`
-	KundeID      int64     `json:"KundeID"`
-	ProjektID    int64     `json:"ProjektID"`
-	Erstelldatum time.Time `json:"Erstelldatum"`
+	ID           int64  `json:"ID"`
+	TeilName     string `json:"TeilName"`
+	Kunde        string `json:"Kunde"`
+	KundeId      int64|  `json:"KundeId"`
+	Projekt      string `json:"Projekt"`
+	ProjektId    int64  `json:"ProjektId"`
+	Erstelldatum string `json:"Erstelldatum"`
 
 	TypID                    int64 `json:"TypID"`
 	HerstellungsartID        int64 `json:"HerstellungsartID"`

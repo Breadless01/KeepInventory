@@ -43,8 +43,8 @@ func NewBauteilService(repo BauteilRepository,
 
 type CreateBauteilInput struct {
 	TeilName  string
-	KundeID   int64
-	ProjektID int64
+	KundeId   int64
+	ProjektId int64
 
 	TypID                    int64
 	HerstellungsartID        int64
@@ -59,9 +59,9 @@ type CreateBauteilInput struct {
 func (s *BauteilService) CreateBauteil(in CreateBauteilInput) (*domain.Bauteil, error) {
 	b := &domain.Bauteil{
 		TeilName:     in.TeilName,
-		KundeID:      in.KundeID,
-		ProjektID:    in.ProjektID,
-		Erstelldatum: time.Now(),
+		KundeId:      in.KundeId,
+		ProjektId:    in.ProjektId,
+		Erstelldatum: time.Now().Local().String(),
 
 		TypID:                    in.TypID,
 		HerstellungsartID:        in.HerstellungsartID,
