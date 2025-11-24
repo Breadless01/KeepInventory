@@ -4,7 +4,7 @@ type Bauteil struct {
 	ID           int64  `json:"ID"`
 	TeilName     string `json:"TeilName"`
 	Kunde        string `json:"Kunde"`
-	KundeId      int64|  `json:"KundeId"`
+	KundeId      int64  `json:"KundeId"`
 	Projekt      string `json:"Projekt"`
 	ProjektId    int64  `json:"ProjektId"`
 	Erstelldatum string `json:"Erstelldatum"`

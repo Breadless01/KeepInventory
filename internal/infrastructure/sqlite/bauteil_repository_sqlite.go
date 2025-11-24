@@ -89,7 +89,6 @@ func (r *BauteilRepositorySQLite) FindAll() ([]*domain.Bauteil, error) {
 	result := make([]*domain.Bauteil, 0)
 
 	for rows.Next() {
-		log.Println(rows)
 		var b domain.Bauteil
 		if err := rows.Scan(
 			&b.ID,

@@ -29,6 +29,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  margin-left: 240px;
 }
 
 /* Header über den Views */
@@ -48,6 +49,12 @@ body {
   display: flex;
   align-items: center;
   gap: 0.8rem;
+}
+
+.ki-error {
+  color: #e53935;
+  font-weight: 500;
+  margin-bottom: 1.7rem;
 }
 
 .ki-add-btn {

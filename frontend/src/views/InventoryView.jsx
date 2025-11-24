@@ -3,6 +3,7 @@ import { ListBauteile } from "../../wailsjs/go/backend/App.js";
 import { NewBauteilModal } from "../components/special/NewBauteilModal.jsx";
 import { Plus } from "lucide-react";
 import { FlexTable } from "../components/ui/FlexTable.jsx";
+import { useToasts } from "../components/ui/ToastContainer.jsx";
 
 
 export default function InventoryView() {
@@ -11,7 +12,6 @@ export default function InventoryView() {
   const [lagerort, setLagerort] = useState("");
   const [beschreibung, setBeschreibung] = useState("");
   const [bestand, setBestand] = useState(0);
-  const [error, setError] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const columns = [
     { id: "id", label: "ID", field: "ID", width: 0.5, align: "center" },
@@ -22,14 +22,20 @@ export default function InventoryView() {
     { id: "erstelldatum", label: "Erstelldatum", field: "Erstelldatum", width: 2 },
   ];
 
+  const { addToast } = useToasts();
   
   async function loadBauteile() {
     try {
       const list = await ListBauteile();
       setBauteile(list || []);
     } catch (e) {
+      addToast({
+        title: "Fehler beim Laden der Bauteile",
+        message: String(e),
+        type: "error",
+        mode: "static",
+      });
       console.error(e);
-      setError(String(e));
     }
   }
 
@@ -42,8 +48,13 @@ export default function InventoryView() {
       const list = await ListBauteile();
       setBauteile(list || []);
     } catch (e) {
+      addToast({
+        title: "Fehler beim Laden der Bauteile",
+        message: String(e),
+        type: "error",
+        mode: "static",
+      });
       console.error(e);
-      setError(String(e));
     }
   }
 
@@ -65,8 +76,6 @@ export default function InventoryView() {
             <Plus size={16} strokeWidth={4} />
           </button>
         </div>
-
-        {error && <div className="ki-error">{error}</div>}
 
         <FlexTable columns={columns} data={safeBauteile} />
       </div>

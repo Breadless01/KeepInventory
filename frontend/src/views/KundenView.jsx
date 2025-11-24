@@ -7,25 +7,31 @@ import {
   ListKunden,
   CreateKunde,
 } from "../../wailsjs/go/backend/App";
+import { useToasts } from "../components/ui/ToastContainer.jsx";
 
 export default function KundenView() {
   const [kunden, setKunden] = useState([]);
   const [name, setName] = useState("");
   const [sitz, setSitz] = useState("");
-  const [error, setError] = useState("");
   const columns = [
     { id: "id", label: "ID", field: "ID", width: 0.5, align: "center" },
     { id: "name", label: "Name", field: "Name", width: 2 },
     { id: "sitz", label: "Sitz", field: "Sitz", width: 2 },
   ];
+  const { addToast } = useToasts();
 
   async function loadKunden() {
     try {
       const list = await ListKunden();
       setKunden(list || []);
     } catch (e) {
+      addToast({
+        title: "Fehler beim Laden der Kunden",
+        message: String(e),
+        type: "error",
+        mode: "static",
+      });
       console.error(e);
-      setError(String(e));
     }
   }
 
@@ -35,7 +41,6 @@ export default function KundenView() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setError("");
 
     try {
       await CreateKunde({
@@ -47,8 +52,13 @@ export default function KundenView() {
       setSitz("");
       await loadKunden();
     } catch (e) {
+      addToast({
+        title: "Fehler beim anlegen des Kunden",
+        message: String(e),
+        type: "error",
+        mode: "static",
+      });
       console.error(e);
-      setError(String(e));
     }
   }
 
@@ -58,7 +68,6 @@ export default function KundenView() {
     <div className="ki-content">
       <div className="ki-card">
         <h2 className="ki-card-title">Neuer Kunde</h2>
-        {error && <div className="ki-error">{error}</div>}
 
         <form className="ki-form" onSubmit={handleSubmit}>
           <input
