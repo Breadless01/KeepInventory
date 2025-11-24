@@ -3,6 +3,7 @@ package sqlite
 import (
 	"database/sql"
 	"log"
+	"strconv"
 
 	"KeepInventory/internal/application"
 	"KeepInventory/internal/domain"
@@ -90,13 +91,17 @@ func (r *BauteilRepositorySQLite) FindAll() ([]*domain.Bauteil, error) {
 
 	for rows.Next() {
 		var b domain.Bauteil
+		var kundeID sql.NullString
+		var projektID sql.NullString
+		var kundeName sql.NullString
+		var projektName sql.NullString
 		if err := rows.Scan(
 			&b.ID,
 			&b.TeilName,
-			&b.KundeId,
-			&b.Kunde,
-			&b.ProjektId,
-			&b.Projekt,
+			&kundeID,
+			&kundeName,
+			&projektID,
+			&projektName,
 			&b.Erstelldatum,
 			&b.TypID,
 			&b.HerstellungsartID,
@@ -109,6 +114,35 @@ func (r *BauteilRepositorySQLite) FindAll() ([]*domain.Bauteil, error) {
 			&b.Sachnummer,
 		); err != nil {
 			return nil, err
+		}
+		if kundeID.Valid && kundeID.String != "" {
+			b.KundeId, err = strconv.ParseInt(kundeID.String, 10, 64)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			b.KundeId = 0
+		}
+
+		if projektID.Valid && projektID.String != "" {
+			b.ProjektId, err = strconv.ParseInt(projektID.String, 10, 64)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			b.ProjektId = 0
+		}
+
+		if kundeName.Valid {
+			b.Kunde = kundeName.String
+		} else {
+			b.Kunde = ""
+		}
+
+		if projektName.Valid {
+			b.Projekt = projektName.String
+		} else {
+			b.Projekt = ""
 		}
 		result = append(result, &b)
 	}
