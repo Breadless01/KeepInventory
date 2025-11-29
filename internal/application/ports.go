@@ -10,6 +10,7 @@ type BauteilRepository interface {
 		funktionID, materialID, oberflaechenbehandlungID,
 		farbeID, reserveID int64,
 	) (int64, error)
+	FindByFilter(req domain.FilterState) ([]*domain.Bauteil, error)
 }
 
 type TypRepository interface {

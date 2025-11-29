@@ -21,6 +21,7 @@ type App struct {
 	OberflaechenbehandlungService *application.OberflaechenbehandlungService
 	FarbeService                  *application.FarbeService
 	ReserveService                *application.ReserveService
+	FilterConfigService           *application.FilterConfigService
 }
 
 // Wails ruft das beim Start auf und gibt dir den Context.
@@ -127,4 +128,12 @@ func (a *App) ListFarben() ([]*domain.Farbe, error) {
 
 func (a *App) ListReserven() ([]*domain.Reserve, error) {
 	return a.ReserveService.FindAll()
+}
+
+func (a *App) GetFilterConfig() (domain.FilterConfig, error) {
+	return a.FilterConfigService.Load()
+}
+
+func (a *App) SaveFilterConfig(cfg domain.FilterConfig) error {
+	return a.FilterConfigService.Save(cfg)
 }

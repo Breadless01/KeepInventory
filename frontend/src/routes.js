@@ -3,7 +3,7 @@ import KundenView from "./views/KundenView.jsx";
 import ProjekteView from "./views/ProjekteView.jsx";
 import SettingsView from "./views/SettingsView.jsx";
 
-import { Database, Users, Folder, Settings, Diamond } from "lucide-react";
+import { Database, Users, Folder, Settings, Diamond, Funnel } from "lucide-react";
 
 export const routes = [
   {
@@ -35,10 +35,17 @@ export const routes = [
     ]
   },
   {
-    path: "/",
     id: "settings",
     label: "Settings",
     icon: Settings,
-    component: SettingsView,
+    children: [
+        {
+            path: "/filterSettings",
+            id: "filterSettings",
+            label: "Filter",
+            icon: Funnel,
+            component: ProjekteView
+        }
+    ],
   }
 ];

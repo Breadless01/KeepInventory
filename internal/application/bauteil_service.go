@@ -41,6 +41,35 @@ func NewBauteilService(repo BauteilRepository,
 	}
 }
 
+func (s *BauteilService) FacetFilter(req domain.FilterState) (domain.FilterResult, error) {
+	// 1. Gefilterte Bauteile aus Repo holen
+	bauteile, err := s.repo.FindByFilter(req)
+	if err != nil {
+		return domain.FilterResult{}, err
+	}
+
+	// 2. Facets berechnen (Counts etc.)
+	facets := s.buildFacets(bauteile, req)
+
+	// 3. Pagination anwenden
+	total := len(bauteile)
+	start := (req.Page - 1) * req.PageSize
+	if start < 0 {
+		start = 0
+	}
+	end := start + req.PageSize
+	if end > total {
+		end = total
+	}
+	pageItems := bauteile[start:end]
+
+	return domain.FilterResult{
+		Items:  pageItems,
+		Total:  total,
+		Facets: facets,
+	}, nil
+}
+
 type CreateBauteilInput struct {
 	TeilName  string
 	KundeId   int64
@@ -147,4 +176,45 @@ func (s *BauteilService) ListBauteile() ([]*domain.Bauteil, error) {
 		list = []*domain.Bauteil{}
 	}
 	return list, nil
+}
+
+func (s *BauteilService) buildFacets(bauteile []*domain.Bauteil, req domain.FilterState) map[string][]domain.FacetOption {
+	facets := make(map[string]map[int64]int) // field -> id -> count
+
+	// Zählen
+	for _, b := range bauteile {
+		inc(facets, "typ_id", b.TypID)
+		inc(facets, "material_id", b.MaterialID)
+		inc(facets, "funktion_id", b.FunktionID)
+		inc(facets, "farbe_id", b.FarbeID)
+		// usw. für andere Felder, die filterbar sind
+	}
+
+	// In []FacetOption umwandeln + Namen aus Stammdaten holen
+	out := make(map[string][]domain.FacetOption)
+
+	for field, m := range facets {
+		var opts []domain.FacetOption
+		for id, count := range m {
+			name := s.lookupName(field, id) // z.B. "Material" + id -> "Edelstahl"
+			opts = append(opts, domain.FacetOption{
+				ID:    id,
+				Name:  name,
+				Count: count,
+			})
+		}
+		out[field] = opts
+	}
+
+	return out
+}
+
+func inc(m map[string]map[int64]int, field string, id int64) {
+	if id == 0 {
+		return
+	}
+	if m[field] == nil {
+		m[field] = make(map[int64]int)
+	}
+	m[field][id]++
 }

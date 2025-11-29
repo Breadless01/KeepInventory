@@ -16,7 +16,7 @@ export default function InventoryView() {
   const columns = [
     { id: "id", label: "ID", field: "ID", width: 0.5, align: "center" },
     { id: "name", label: "TeilName", field: "TeilName", width: 2 },
-    { id: "achnummer", label: "Sachnummer", field: "Sachnummer", width: 2 },
+    { id: "sachnummer", label: "Sachnummer", field: "Sachnummer", width: 2 },
     { id: "kunde", label: "Kunde", field: "Kunde", width: 2 },
     { id: "projekt", label: "Projekt", field: "Projekt", width: 2 },
     { id: "erstelldatum", label: "Erstelldatum", field: "Erstelldatum", width: 2 },
