@@ -18,7 +18,8 @@ type BauteilService struct {
 	reserveRepo     ReserveRepository
 }
 
-func NewBauteilService(repo BauteilRepository,
+func NewBauteilService(
+	repo BauteilRepository,
 	typRepo TypRepository,
 	artRepo HerstellungsartRepository,
 	verschRepo VerschleissteilRepository,
@@ -41,11 +42,11 @@ func NewBauteilService(repo BauteilRepository,
 	}
 }
 
-func (s *BauteilService) FacetFilter(req domain.FilterState) (domain.FilterResult, error) {
+func (s *BauteilService) FacetFilter(req domain.FilterState) (domain.BauteilFilterResult, error) {
 	// 1. Gefilterte Bauteile aus Repo holen
 	bauteile, err := s.repo.FindByFilter(req)
 	if err != nil {
-		return domain.FilterResult{}, err
+		return domain.BauteilFilterResult{}, err
 	}
 
 	// 2. Facets berechnen (Counts etc.)
@@ -63,7 +64,7 @@ func (s *BauteilService) FacetFilter(req domain.FilterState) (domain.FilterResul
 	}
 	pageItems := bauteile[start:end]
 
-	return domain.FilterResult{
+	return domain.BauteilFilterResult{
 		Items:  pageItems,
 		Total:  total,
 		Facets: facets,
@@ -166,29 +167,24 @@ func (s *BauteilService) CreateBauteil(in CreateBauteilInput) (*domain.Bauteil, 
 	return s.repo.Create(b)
 }
 
-// ListBauteile gibt alle Bauteile aus dem Repository zurück.
-func (s *BauteilService) ListBauteile() ([]*domain.Bauteil, error) {
-	list, err := s.repo.FindAll()
-	if err != nil {
-		return nil, err
-	}
-	if list == nil {
-		list = []*domain.Bauteil{}
-	}
-	return list, nil
-}
-
 func (s *BauteilService) buildFacets(bauteile []*domain.Bauteil, req domain.FilterState) map[string][]domain.FacetOption {
 	facets := make(map[string]map[int64]int) // field -> id -> count
 
 	// Zählen
 	for _, b := range bauteile {
-		inc(facets, "typ_id", b.TypID)
-		inc(facets, "material_id", b.MaterialID)
-		inc(facets, "funktion_id", b.FunktionID)
-		inc(facets, "farbe_id", b.FarbeID)
-		// usw. für andere Felder, die filterbar sind
+		incBaueilAttr(facets, "farbe_id", b.FarbeID)
+		incBaueilAttr(facets, "funktion_id", b.FunktionID)
+		incBaueilAttr(facets, "herstellungsart_id", b.HerstellungsartID)
+		incBaueilAttr(facets, "kunde_id", b.KundeId)
+		incBaueilAttr(facets, "material_id", b.MaterialID)
+		incBaueilAttr(facets, "oberflaechenbehandlung_id", b.OberflaechenbehandlungID)
+		incBaueilAttr(facets, "projekt_id", b.ProjektId)
+		incBaueilAttr(facets, "reserve_id", b.ReserveID)
+		incBaueilAttr(facets, "typ_id", b.TypID)
+		incBaueilAttr(facets, "verschleissteil_id", b.VerschleissteilID)
 	}
+
+	valueMap := s.repo.GetAttributeValuesById(facets)
 
 	// In []FacetOption umwandeln + Namen aus Stammdaten holen
 	out := make(map[string][]domain.FacetOption)
@@ -196,7 +192,7 @@ func (s *BauteilService) buildFacets(bauteile []*domain.Bauteil, req domain.Filt
 	for field, m := range facets {
 		var opts []domain.FacetOption
 		for id, count := range m {
-			name := s.lookupName(field, id) // z.B. "Material" + id -> "Edelstahl"
+			name := s.lookupName(valueMap, field, id)
 			opts = append(opts, domain.FacetOption{
 				ID:    id,
 				Name:  name,
@@ -209,7 +205,7 @@ func (s *BauteilService) buildFacets(bauteile []*domain.Bauteil, req domain.Filt
 	return out
 }
 
-func inc(m map[string]map[int64]int, field string, id int64) {
+func incBaueilAttr(m map[string]map[int64]int, field string, id int64) {
 	if id == 0 {
 		return
 	}
@@ -217,4 +213,8 @@ func inc(m map[string]map[int64]int, field string, id int64) {
 		m[field] = make(map[int64]int)
 	}
 	m[field][id]++
+}
+
+func (s *BauteilService) lookupName(valueMap map[string]map[int64]string, field string, id int64) string {
+	return valueMap[field][id]
 }

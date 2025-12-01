@@ -2,10 +2,11 @@ package sqlite
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"strconv"
+	"strings"
 
-	"KeepInventory/internal/application"
 	"KeepInventory/internal/domain"
 )
 
@@ -14,12 +15,11 @@ type BauteilRepositorySQLite struct {
 	db *sql.DB
 }
 
-func NewBauteilRepositorySQLite(db *sql.DB) application.BauteilRepository {
+func NewBauteilRepositorySQLite(db *sql.DB) *BauteilRepositorySQLite {
 	return &BauteilRepositorySQLite{db: db}
 }
 
 func (r *BauteilRepositorySQLite) Create(b *domain.Bauteil) (*domain.Bauteil, error) {
-	log.Println(b)
 	res, err := r.db.Exec(`
         INSERT INTO bauteile (
             teil_name, kunde_id, projekt_id, erstelldatum,
@@ -55,8 +55,8 @@ func (r *BauteilRepositorySQLite) Create(b *domain.Bauteil) (*domain.Bauteil, er
 	return b, nil
 }
 
-func (r *BauteilRepositorySQLite) FindAll() ([]*domain.Bauteil, error) {
-	rows, err := r.db.Query(`
+func (r *BauteilRepositorySQLite) FindByFilter(filter domain.FilterState) ([]*domain.Bauteil, error) {
+	base := `
         SELECT 
 			b.id,
 			b.teil_name,
@@ -79,15 +79,17 @@ func (r *BauteilRepositorySQLite) FindAll() ([]*domain.Bauteil, error) {
 			kunden k ON b.kunde_id = k.id
 			LEFT JOIN
 			projekte p ON b.projekt_id = p.id
-		ORDER BY teil_name DESC;
+    `
+	where, args := buildWhereClause(filter.Filters)
+	query := base + " " + where + " ORDER BY teil_name ASC"
 
-    `)
+	rows, err := r.db.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	result := make([]*domain.Bauteil, 0)
+	var result []*domain.Bauteil
 
 	for rows.Next() {
 		var b domain.Bauteil
@@ -149,8 +151,50 @@ func (r *BauteilRepositorySQLite) FindAll() ([]*domain.Bauteil, error) {
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
-	log.Println(result)
 	return result, nil
+}
+
+type row struct {
+	ID   int64
+	Name string
+}
+
+func (r *BauteilRepositorySQLite) GetAttributeValuesById(facets map[string]map[int64]int) map[string]map[int64]string {
+	valueMap := make(map[string]map[int64]string)
+	log.Println(facets)
+
+	for key, _ := range facets {
+		tableName := strings.Split(key, "_")[0]
+		if tableName == "projekt" {
+			tableName = "projekte"
+		} else if tableName == "kunde" {
+			tableName = "kunden"
+		}
+		rows, err := r.db.Query(`
+			SELECT id, name 
+			FROM ` + tableName,
+		)
+
+		if err != nil {
+			log.Panicln(err)
+			return nil
+		}
+		defer rows.Close()
+
+		values := make(map[int64]string)
+
+		for rows.Next() {
+			v := row{}
+
+			if err := rows.Scan(&v.ID, &v.Name); err != nil {
+				log.Panicln(err)
+				return nil
+			}
+			values[v.ID] = v.Name
+		}
+		valueMap[key] = values
+	}
+	return valueMap
 }
 
 func (r *BauteilRepositorySQLite) CountByAttributes(
@@ -184,4 +228,31 @@ func (r *BauteilRepositorySQLite) CountByAttributes(
 		return 0, err
 	}
 	return count, nil
+}
+
+func buildWhereClause(filters map[string][]any) (string, []any) {
+	if len(filters) == 0 {
+		return "", nil
+	}
+
+	var parts []string
+	var args []any
+
+	for field, ids := range filters {
+		if len(ids) == 0 {
+			continue
+		}
+		placeholders := make([]string, len(ids))
+		for i, id := range ids {
+			placeholders[i] = "?"
+			args = append(args, id)
+		}
+		parts = append(parts, fmt.Sprintf("%s IN (%s)", field, strings.Join(placeholders, ",")))
+	}
+
+	if len(parts) == 0 {
+		return "", args
+	}
+
+	return "WHERE " + strings.Join(parts, " AND "), args
 }

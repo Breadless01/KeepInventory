@@ -1,0 +1,115 @@
+.ki-facet {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 1.1rem;
+}
+
+/* Label bleibt wie bisher */
+.ki-facet-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text-main);
+}
+
+/* ---- Select-artige Kontrollfläche ---- */
+
+.ki-ms-control {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+
+    padding: 0.45rem 0.6rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-border-subtle);
+    background: var(--color-bg-surface);
+
+    cursor: pointer;
+    transition:
+            border-color 0.15s ease,
+            box-shadow 0.15s ease,
+            background 0.15s ease;
+}
+
+.ki-ms-control:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 1px rgba(231, 76, 60, 0.1);
+}
+
+.ki-ms-control--open {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 1px rgba(231, 76, 60, 0.16);
+}
+
+/* Text im Feld */
+.ki-ms-value {
+    font-size: 0.87rem;
+    color: var(--color-text-main);
+}
+
+.ki-ms-placeholder {
+    color: var(--color-text-soft);
+}
+
+/* Chevron rechts */
+.ki-ms-chevron {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+}
+
+/* ---- Dropdown-Liste ---- */
+
+.ki-ms-dropdown {
+    margin-top: 0.25rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-border-subtle);
+    background: var(--color-bg-surface);
+    box-shadow: var(--shadow-soft);
+    max-height: 240px;
+    overflow: auto;
+    padding: 0.25rem 0;
+    z-index: 10;
+}
+
+/* Einzelne Option */
+.ki-ms-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+
+    padding: 0.35rem 0.65rem;
+    cursor: pointer;
+
+    font-size: 0.87rem;
+    color: var(--color-text-main);
+
+    transition:
+            background 0.12s ease,
+            color 0.12s ease;
+}
+
+.ki-ms-option:hover {
+    background: var(--color-bg-subtle);
+}
+
+/* Ausgewählte Option */
+.ki-ms-option--selected {
+    background: var(--color-primary-soft);
+    color: var(--color-primary-dark);
+}
+
+/* Name links */
+.ki-ms-option-name {
+    flex-grow: 1;
+}
+
+/* Count-Badge rechts */
+.ki-ms-option-count {
+    font-size: 0.75rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 999px;
+    background: var(--color-bg-soft);
+    color: var(--color-text-muted);
+}

@@ -5,3 +5,9 @@ type Kunde struct {
 	Name string `json:"Name"`
 	Sitz string `json:"Sitz"`
 }
+
+type KundeFilterResult struct {
+	Items  []*Kunde                 `json:"items"`
+	Total  int                      `json:"total"`
+	Facets map[string][]FacetOption `json:"facets"`
+}

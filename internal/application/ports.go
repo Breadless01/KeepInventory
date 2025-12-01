@@ -4,13 +4,13 @@ import "KeepInventory/internal/domain"
 
 type BauteilRepository interface {
 	Create(bauteil *domain.Bauteil) (*domain.Bauteil, error)
-	FindAll() ([]*domain.Bauteil, error)
 	CountByAttributes(
 		typID, herstellungsartID, verschleissteilID,
 		funktionID, materialID, oberflaechenbehandlungID,
 		farbeID, reserveID int64,
 	) (int64, error)
 	FindByFilter(req domain.FilterState) ([]*domain.Bauteil, error)
+	GetAttributeValuesById(facets map[string]map[int64]int) map[string]map[int64]string
 }
 
 type TypRepository interface {
@@ -57,6 +57,7 @@ type KundeRepository interface {
 	Create(k *domain.Kunde) (*domain.Kunde, error)
 	FindByID(id int64) (*domain.Kunde, error)
 	FindAll() ([]*domain.Kunde, error)
+	FindByFilter(req domain.FilterState) ([]*domain.Kunde, error)
 }
 
 type ProjektRepository interface {

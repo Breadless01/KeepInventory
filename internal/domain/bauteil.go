@@ -20,3 +20,9 @@ type Bauteil struct {
 
 	Sachnummer string `json:"Sachnummer"`
 }
+
+type BauteilFilterResult struct {
+	Items  []*Bauteil               `json:"items"`
+	Total  int                      `json:"total"`
+	Facets map[string][]FacetOption `json:"facets"`
+}

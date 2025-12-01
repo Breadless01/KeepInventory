@@ -14,8 +14,16 @@ export function CreateProjekt(arg1) {
   return window['go']['backend']['App']['CreateProjekt'](arg1);
 }
 
-export function ListBauteile() {
-  return window['go']['backend']['App']['ListBauteile']();
+export function FilterBauteile(arg1) {
+  return window['go']['backend']['App']['FilterBauteile'](arg1);
+}
+
+export function FilterKunden(arg1) {
+  return window['go']['backend']['App']['FilterKunden'](arg1);
+}
+
+export function GetFilterConfig() {
+  return window['go']['backend']['App']['GetFilterConfig']();
 }
 
 export function ListFarben() {
@@ -56,6 +64,10 @@ export function ListTypen() {
 
 export function ListVerschleissteile() {
   return window['go']['backend']['App']['ListVerschleissteile']();
+}
+
+export function SaveFilterConfig(arg1) {
+  return window['go']['backend']['App']['SaveFilterConfig'](arg1);
 }
 
 export function Startup(arg1) {

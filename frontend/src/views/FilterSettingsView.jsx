@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import { GetFilterConfig, SaveFilterConfig } from "../../wailsjs/go/backend/App";
+import { useToasts } from "../components/ui/ToastContainer.jsx";
 
 export default function FilterSettingsView() {
     const [config, setConfig] = useState(null);
     const [saving, setSaving] = useState(false);
+
+    const { addToast } = useToasts();
 
     useEffect(() => {
         GetFilterConfig().then(setConfig);
@@ -15,8 +18,8 @@ export default function FilterSettingsView() {
 
     function toggleField(resourceIndex, fieldIndex) {
         const next = structuredClone(config);
-        const field = next.Resources[resourceIndex].Fields[fieldIndex];
-        field.Enabled = !field.Enabled;
+        const field = next.resources[resourceIndex].fields[fieldIndex];
+        field.enabled = !field.enabled;
         setConfig(next);
     }
 
@@ -24,7 +27,10 @@ export default function FilterSettingsView() {
         setSaving(true);
         try {
             await SaveFilterConfig(config);
-            // optional Toast
+            addToast({
+                title: "Gespeichert",
+                message: "Einstellung gespeichert"
+            });
         } finally {
             setSaving(false);
         }
@@ -34,23 +40,23 @@ export default function FilterSettingsView() {
         <div className="ki-content">
             <h2 className="ki-h2">Filter-Einstellungen</h2>
 
-            {config.Resources.map((res, rIndex) => (
-                <div key={res.Resource} className="ki-card" style={{ marginBottom: "1rem" }}>
+            {config.resources.map((res, rIndex) => (
+                <div key={res.resource} className="ki-card" style={{ marginBottom: "1rem" }}>
                     <h3 className="ki-h3">
-                        Ressource: {res.Resource} <span className="ki-text-muted">({res.Table})</span>
+                        <span className="ki-text-muted">{res.table}</span>
                     </h3>
 
                     <div className="ki-filter-fields-grid">
-                        {res.Fields.map((f, fIndex) => (
-                            <label key={f.Field} className="ki-filter-settings-row">
+                        {res.fields.map((f, fIndex) => (
+                            <label key={f.field} className="ki-filter-settings-row">
+                                <span className="ki-filter-settings-label">
+                                    {f.label}
+                                </span>
                                 <input
                                     type="checkbox"
-                                    checked={f.Enabled}
+                                    checked={f.enabled}
                                     onChange={() => toggleField(rIndex, fIndex)}
                                 />
-                                <span className="ki-filter-settings-label">
-                  {f.Label} <span className="ki-text-soft">({f.Field})</span>
-                </span>
                             </label>
                         ))}
                     </div>

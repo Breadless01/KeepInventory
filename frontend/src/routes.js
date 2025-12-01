@@ -1,7 +1,7 @@
 import InventoryView from "./views/InventoryView.jsx";
 import KundenView from "./views/KundenView.jsx";
 import ProjekteView from "./views/ProjekteView.jsx";
-import SettingsView from "./views/SettingsView.jsx";
+import FilterSettingsView from "./views/FilterSettingsView.jsx";
 
 import { Database, Users, Folder, Settings, Diamond, Funnel } from "lucide-react";
 
@@ -44,7 +44,7 @@ export const routes = [
             id: "filterSettings",
             label: "Filter",
             icon: Funnel,
-            component: ProjekteView
+            component: FilterSettingsView
         }
     ],
   }

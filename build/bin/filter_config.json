@@ -1,0 +1,97 @@
+{
+  "resources": [
+    {
+      "resource": "bauteile",
+      "table": "Bauteile",
+      "fields": [
+        {
+          "field": "teil_name",
+          "label": "Teil name",
+          "enabled": false
+        },
+        {
+          "field": "kunde_id",
+          "label": "Kunde",
+          "enabled": true
+        },
+        {
+          "field": "projekt_id",
+          "label": "Projekt",
+          "enabled": true
+        },
+        {
+          "field": "typ_id",
+          "label": "Typ",
+          "enabled": true
+        },
+        {
+          "field": "herstellungsart_id",
+          "label": "Herstellungsart",
+          "enabled": true
+        },
+        {
+          "field": "verschleissteil_id",
+          "label": "Verschleissteil",
+          "enabled": true
+        },
+        {
+          "field": "funktion_id",
+          "label": "Funktion",
+          "enabled": true
+        },
+        {
+          "field": "material_id",
+          "label": "Material",
+          "enabled": true
+        },
+        {
+          "field": "oberflaechenbehandlung_id",
+          "label": "Oberflaechenbehandlung",
+          "enabled": true
+        },
+        {
+          "field": "farbe_id",
+          "label": "Farbe",
+          "enabled": true
+        },
+        {
+          "field": "reserve_id",
+          "label": "Reserve",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "resource": "kunden",
+      "table": "Kunden",
+      "fields": [
+        {
+          "field": "name",
+          "label": "Name",
+          "enabled": true
+        },
+        {
+          "field": "sitz",
+          "label": "Sitz",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "resource": "projekte",
+      "table": "Projekte",
+      "fields": [
+        {
+          "field": "name",
+          "label": "Name",
+          "enabled": true
+        },
+        {
+          "field": "kunde",
+          "label": "Kunde",
+          "enabled": true
+        }
+      ]
+    }
+  ]
+}

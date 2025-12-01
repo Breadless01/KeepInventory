@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Modal } from "../ui/Modal.jsx";
 import { Stepper } from "../ui/Stepper.jsx";
-import "./newBauteilModal.css"
+import "./NewModal.css"
 
 import {
   CreateBauteil,

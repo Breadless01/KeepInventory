@@ -62,10 +62,6 @@ func (a *App) CreateBauteil(req CreateBauteilRequest) (*domain.Bauteil, error) {
 	})
 }
 
-func (a *App) ListBauteile() ([]*domain.Bauteil, error) {
-	return a.BauteilService.ListBauteile()
-}
-
 type CreateKundeRequest struct {
 	Name string `json:"name"`
 	Sitz string `json:"sitz"`
@@ -136,4 +132,12 @@ func (a *App) GetFilterConfig() (domain.FilterConfig, error) {
 
 func (a *App) SaveFilterConfig(cfg domain.FilterConfig) error {
 	return a.FilterConfigService.Save(cfg)
+}
+
+func (a *App) FilterBauteile(state domain.FilterState) (domain.BauteilFilterResult, error) {
+	return a.BauteilService.FacetFilter(state)
+}
+
+func (a *App) FilterKunden(state domain.FilterState) (domain.KundeFilterResult, error) {
+	return a.KundeService.FacetFilter(state)
 }

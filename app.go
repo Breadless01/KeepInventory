@@ -4,6 +4,8 @@ import (
 	"context"
 	"embed"
 	"log"
+	"os"
+	"path/filepath"
 
 	"KeepInventory/backend"
 	"KeepInventory/internal/application"
@@ -19,6 +21,12 @@ type AppContainer struct {
 }
 
 func NewAppContainer() *AppContainer {
+	exePath, err := os.Executable()
+	if err != nil {
+		exePath, _ = os.Getwd()
+	}
+	baseDir := filepath.Dir(exePath)
+
 	db := sqliteadapter.OpenDB("inventory.db")
 
 	typRepo := sqliteadapter.NewTypRepositorySQLite(db)
@@ -43,6 +51,8 @@ func NewAppContainer() *AppContainer {
 		farbeRepo,
 		reserveRepo,
 	)
+
+	filterCfgService := application.NewFilterConfigService(db, baseDir)
 
 	kundeRepo := sqliteadapter.NewKundeRepositorySQLite(db)
 	kundeService := application.NewKundeService(kundeRepo)
@@ -72,6 +82,7 @@ func NewAppContainer() *AppContainer {
 		OberflaechenbehandlungService: oberflaechenbehandlungService,
 		FarbeService:                  farbeService,
 		ReserveService:                reserveService,
+		FilterConfigService:           filterCfgService,
 	}
 
 	return &AppContainer{

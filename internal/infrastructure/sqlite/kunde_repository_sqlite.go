@@ -1,9 +1,8 @@
 package sqlite
 
 import (
-	"database/sql"
-
 	"KeepInventory/internal/domain"
+	"database/sql"
 )
 
 type KundeRepositorySQLite struct {
@@ -64,4 +63,41 @@ func (r *KundeRepositorySQLite) FindAll() ([]*domain.Kunde, error) {
 	}
 
 	return kunden, nil
+}
+
+func (r *KundeRepositorySQLite) FindByFilter(filter domain.FilterState) ([]*domain.Kunde, error) {
+	base := `
+        SELECT 
+            id,
+			name,
+			sitz
+		FROM kunden
+    `
+	where, args := buildWhereClause(filter.Filters)
+	query := base + " " + where + " ORDER BY name ASC"
+
+	rows, err := r.db.Query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var result []*domain.Kunde
+
+	for rows.Next() {
+		var k domain.Kunde
+		if err := rows.Scan(
+			&k.ID,
+			&k.Name,
+			&k.Sitz,
+		); err != nil {
+			return nil, err
+		}
+
+		result = append(result, &k)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return result, nil
 }
