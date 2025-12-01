@@ -137,12 +137,12 @@ export function NewBauteilModal({ open, onClose, onCreated }) {
       return "Auswahl unvollständig oder Stammdaten nicht geladen.";
     }
 
-    const keyPart = `${typ.Symbol}-${art.Symbol}-${versch.Symbol}-${fun.Symbol}-${mat.Symbol}-${oberf.Symbol}-${farbe.Symbol}-${res.Symbol}`;
+    const keyPart = `${typ.Symbol}${art.Symbol}${versch.Symbol}${fun.Symbol}${mat.Symbol}${oberf.Symbol}${farbe.Symbol}${res.Symbol}`;
 
     // echtes Hex-Suffix kommt aus dem Backend → hier nur Dummy/Struktur
     const fakeSuffix = "????";
 
-    return `${keyPart}-${fakeSuffix}`;
+    return `${keyPart}${fakeSuffix}`;
   }, [
     typID,
     artID,

@@ -110,6 +110,7 @@ export default function InventoryView() {
         {facetFieldConfigs.length > 0 && (
           <div style={{ marginBottom: "1rem" }}>
             <FacetFilterPanel
+              total={total}
               facets={facets}
               filterState={filterState}
               onChange={setFilterState}

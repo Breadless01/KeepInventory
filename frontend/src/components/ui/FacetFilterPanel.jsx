@@ -1,9 +1,19 @@
 import MultiSelectCheckboxGroup from "./MultiSelectCheckboxGroup";
 import "./FacetFilterPanel.css"
+import {useState} from "react";
+import { ChevronRight, ChevronDown } from "lucide-react";
 
-export default function FacetFilterPanel({ facets, filterState, onChange, fieldConfigs, useKeyValues = true }) {
+
+export default function FacetFilterPanel({ facets, filterState, onChange, fieldConfigs, useKeyValues = true, total }) {
+  const [open, setOpen] = useState(false);
   return (
-    <div className="ki-facet-panel">
+    <div className={"ki-facet-wrapper " + (open ? "ki-facet-wrapper-open" : "")}>
+      <div className="ki-header-row ki-filter-header" onClick={() => setOpen(!open)}>
+        <h3 className="ki-filter-title">Filter {total ? "("+total+")" : ""}</h3>
+
+        {open ? <ChevronDown size={18} strokeWidth={2}/> : <ChevronRight size={18} strokeWidth={2}/>}
+      </div>
+      <div className="ki-facet-panel">
       {fieldConfigs
         .filter((f) => f.enabled)
         .map((f) => {
@@ -24,6 +34,7 @@ export default function FacetFilterPanel({ facets, filterState, onChange, fieldC
             />
           );
         })}
+      </div>
     </div>
   );
 }

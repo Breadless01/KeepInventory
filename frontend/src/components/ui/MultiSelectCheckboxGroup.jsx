@@ -41,7 +41,7 @@ export default function MultiSelectCheckboxGroup({ label, options, values, onCha
               const id = opt.ID ?? opt.id;
               const name = opt.Name ?? opt.name;
               const count = opt.Count ?? opt.count;
-              const isSelected = values.includes(id);
+              const isSelected = useKey ? values.includes(id) : values.includes(name);
 
               return (
                 <div

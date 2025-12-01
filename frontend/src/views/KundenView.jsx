@@ -109,6 +109,7 @@ export default function KundenView() {
         {facetFieldConfigs.length > 0 && (
           <div style={{ marginBottom: "1rem" }}>
             <FacetFilterPanel
+              total={total}
               useKeyValues={false}
               facets={facets}
               filterState={filterState}

@@ -4,7 +4,9 @@ frontend/dist/
 /.idea/KeepInventory.iml
 /.idea/vcs.xml
 /.idea/modules.xml
+/.idea/sqldialects.xml
 /.idea/.gitignore
-/frontend/wailsjs/
-.idea
+/frontend/wailsjs/go/backend/App.d.ts
 build
+/frontend/wailsjs/go/backend/
+.idea

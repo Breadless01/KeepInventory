@@ -41,7 +41,7 @@ func GenerateHexSuffix(idx int64) string {
 
 func BuildSachnummer(key SachnummerKey, suffix string) string {
 	return fmt.Sprintf(
-		"%d-%d-%d-%d-%d-%d-%d-%d-%s",
+		"%d%d%d%d%d%d%d%d%s",
 		key.TypSymbol,
 		key.HerstellungsartSymbol,
 		key.VerschleissteilSymbol,
