@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { GetFilterConfig, FilterBauteile } from "../../wailsjs/go/backend/App.js";
+import { GetFilterConfig, FilterBauteile, SearchBauteilSuggestions } from "../../wailsjs/go/backend/App.js";
 import { NewBauteilModal } from "../components/special/NewBauteilModal.jsx";
 import FacetFilterPanel from "../components/ui/FacetFilterPanel.jsx"
 import { Plus } from "lucide-react";
 import { FlexTable } from "../components/ui/FlexTable.jsx";
 import { useToasts } from "../components/ui/ToastContainer.jsx";
+import { Searchbar } from "../components/ui/Searchbar.jsx";
 
 
 export default function InventoryView() {
@@ -23,6 +24,7 @@ export default function InventoryView() {
   // Filter-spezifischer State
   const [filterConfig, setFilterConfig] = useState(null);
   const [filterState, setFilterState] = useState({});
+  const [filterIds, setFilterIds] = useState([]);
   const [facets, setFacets] = useState({});
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -75,7 +77,12 @@ export default function InventoryView() {
   }
 
   useEffect(() => {
+    setFilterState({ ...filterState, ["id"]: filterIds })
+  }, [filterIds]);
+
+  useEffect(() => {
     if (!filterConfig) return;
+    // setFilterState({ ...filterState, ["id"]: filterIds })
     applyFilter(filterConfig, filterState, 1);
   }, [filterState, filterConfig]);
 
@@ -100,6 +107,10 @@ export default function InventoryView() {
   }
   return (
     <div className="ki-content">
+      <Searchbar
+        engine={SearchBauteilSuggestions}
+        onEnter={setFilterIds}
+      />
       <div className="ki-card">
         <div className="ki-header-row">
           <h2 className="ki-card-title">Bauteile</h2>

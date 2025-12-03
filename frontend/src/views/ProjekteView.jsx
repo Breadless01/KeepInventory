@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { FlexTable } from "../components/ui/FlexTable.jsx";
 import {NewProjektModal} from "../components/special/NewProjektModal.jsx";
+import FacetFilterPanel from "../components/ui/FacetFilterPanel.jsx"
 import { Plus } from "lucide-react";
 import {
-  ListProjekte,
-  CreateProjekt,
+  FilterProjekte,
+  GetFilterConfig,
 } from "../../wailsjs/go/backend/App";
 import { useToasts } from "../components/ui/ToastContainer.jsx";
 
@@ -17,12 +18,50 @@ export default function ProjekteView() {
     { id: "name", label: "Name", field: "Name", width: 2 },
     { id: "kunde", label: "Kunde", field: "Kunde", width: 2 },
   ];
+
+  // Filter-spezifischer State
+  const [filterConfig, setFilterConfig] = useState(null);
+  const [filterState, setFilterState] = useState({});
+  const [facets, setFacets] = useState({});
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const pageSize = 50;
+
   const { addToast } = useToasts();
 
-  async function loadProjekte() {
+  useEffect(() => {
+    async function init() {
+      try {
+        const cfg = await GetFilterConfig();
+        setFilterConfig(cfg);
+
+        await applyFilter(cfg, {}, 1);
+      } catch (e) {
+        addToast({
+          title: "Fehler beim Laden der Filter-Konfiguration",
+          message: String(e),
+          type: "error",
+          mode: "static",
+        });
+        console.error(e);
+      }
+    }
+
+    init();
+  }, [])
+
+  async function applyFilter(cfg, state, pageNumber) {
     try {
-      const projList = await ListProjekte();
-      setProjekte(projList || []);
+      const res = await FilterProjekte({
+        page: pageNumber,
+        pageSize,
+        filters: state,
+      });
+
+      setProjekte(res.items || []);
+      setFacets(res.facets || {});
+      setTotal(res.total || 0);
+      setPage(pageNumber);
     } catch (e) {
       addToast({
         title: "Fehler beim Laden der Projekte",
@@ -35,38 +74,29 @@ export default function ProjekteView() {
   }
 
   useEffect(() => {
-    loadProjekte();
-  }, []);
-
-  async function handleSubmit(e) {
-    e.preventDefault();
-
-    try {
-      await CreateProjekt({
-        name,
-        kunde,
-      });
-
-      setName("");
-      setKunde("");
-      await loadData();
-    } catch (e) {
-      addToast({
-        title: "Fehler beim anlegen des Projektes",
-        message: String(e),
-        type: "error",
-        mode: "static",
-      });
-      console.error(e);
-    }
-  }
+    if (!filterConfig) return;
+    applyFilter(filterConfig, filterState, 1);
+  }, [filterState, filterConfig]);
 
   function handleProjektCreated() {
-    loadProjekte()
+    if (!filterConfig) {
+      applyFilter({ resources: [] }, {}, 1);
+    } else {
+      applyFilter(filterConfig, filterState, page);
+    }
   }
 
   const safeProjekte = projekte || [];
 
+  let facetFieldConfigs = [];
+  if (filterConfig && Array.isArray(filterConfig.resources)) {
+    const projektRes = filterConfig.resources.find(
+      (r) => r.resource === "projekte"
+    );
+    if (projektRes && Array.isArray(projektRes.fields)) {
+      facetFieldConfigs = projektRes.fields.filter((f) => f.enabled);
+    }
+  }
   return (
     <div className="ki-content">
       <div className="ki-card">
@@ -76,6 +106,18 @@ export default function ProjekteView() {
             <Plus size={16} strokeWidth={4} />
           </button>
         </div>
+        {facetFieldConfigs.length > 0 && (
+          <div style={{ marginBottom: "1rem" }}>
+            <FacetFilterPanel
+              total={total}
+              useKeyValues={false}
+              facets={facets}
+              filterState={filterState}
+              onChange={setFilterState}
+              fieldConfigs={facetFieldConfigs}
+            />
+          </div>
+        )}
         <FlexTable columns={columns} data={safeProjekte} />
       </div>
       <NewProjektModal

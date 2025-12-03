@@ -1,10 +1,13 @@
-// frontend/src/components/FlexTable.jsx
 import "./flexTable.css";
 import { useEffect, useMemo, useState } from "react";
 import { ChevronRight, ChevronLeft } from "lucide-react";
+import { Modal } from "../ui/Modal.jsx";
+
 
 export function FlexTable({ columns, data, pageSize = 10  }) {
   const [currentPage, setCurrentPage] = useState(1);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selected, setSelected] = useState();
 
   const safeData = data || [];
   const totalItems = safeData.length;
@@ -28,6 +31,14 @@ export function FlexTable({ columns, data, pageSize = 10  }) {
 
   if (!columns || columns.length === 0) {
     return <div className="ki-dt-empty">Keine Spalten definiert.</div>;
+  }
+
+  useEffect(() => {
+    setModalOpen(true);
+  }, [selected]);
+
+  function handleModalClose() {
+    setModalOpen(false);
   }
 
   return (
@@ -59,6 +70,7 @@ export function FlexTable({ columns, data, pageSize = 10  }) {
             <div
               key={row.id ?? row.ID ?? rowIndex}
               className="ki-dt-row"
+              onDoubleClick={() => setSelected(row)}
             >
               {columns.map((col) => (
                 <div
@@ -112,6 +124,11 @@ export function FlexTable({ columns, data, pageSize = 10  }) {
           </button>
         </div>
       </div>
+      {modalOpen ??
+        <Modal
+          title={selected}
+          onClose={handleModalClose}
+        />}
     </div>
   );
 }

@@ -11,6 +11,7 @@ type BauteilRepository interface {
 	) (int64, error)
 	FindByFilter(req domain.FilterState) ([]*domain.Bauteil, error)
 	GetAttributeValuesById(facets map[string]map[int64]int) map[string]map[int64]string
+	SearchSuggestions(prefix string, limit int) ([]domain.BauteilSuggestion, error)
 }
 
 type TypRepository interface {
@@ -64,5 +65,5 @@ type ProjektRepository interface {
 	Create(p *domain.Projekt) (*domain.Projekt, error)
 	FindByID(id int64) (*domain.Projekt, error)
 	FindAll() ([]*domain.Projekt, error)
-	FindByKunde(kunde string) ([]*domain.Projekt, error)
+	FindByFilter(req domain.FilterState) ([]*domain.Projekt, error)
 }

@@ -78,6 +78,110 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+.fade-enter {
+  opacity: 0;
+  z-index: 1;
+}
+.fade-enter.fade-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+.fade-exit {
+  opacity: 1;
+}
+.fade-exit-active {
+  opacity: 0;
+  /*transition: opacity 500ms ease-in;*/
+}
+
+.ki-landing {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Hero-Bereich */
+
+.ki-landing-hero {
+  padding: 1.8rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.ki-landing-hero-text {
+  max-width: 640px;
+}
+
+.ki-landing-title {
+  margin-bottom: 0.4rem;
+}
+
+.ki-landing-subtitle {
+  font-size: var(--ki-p-md);
+  color: var(--color-text-soft);
+  margin: 0;
+}
+
+.ki-landing-actions {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.ki-landing-btn-main {
+  align-self: flex-start;
+}
+
+.ki-landing-note {
+  font-size: var(--ki-p-sm);
+  color: var(--color-text-muted);
+}
+
+/* Feature-Sektion */
+
+.ki-landing-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.ki-landing-feature-card {
+  padding: 1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  text-align: left;
+}
+
+.ki-landing-feature-icon {
+  font-size: 1.6rem;
+}
+
+.ki-landing-feature-title {
+  margin: 0.2rem 0 0;
+}
+
+.ki-landing-feature-text {
+  margin: 0;
+  font-size: var(--ki-p-sm);
+  color: var(--color-text-soft);
+}
+
+/* Kleine Responsive-Anpassung */
+
+@media (max-width: 768px) {
+  .ki-landing-hero {
+    padding: 1.4rem 1.2rem;
+  }
+
+  .ki-landing-features {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Grundlayout: Sidebar links, Content rechts */
 .ki-shell {
   display: flex;

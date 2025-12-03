@@ -6,7 +6,6 @@ frontend/dist/
 /.idea/modules.xml
 /.idea/sqldialects.xml
 /.idea/.gitignore
-/frontend/wailsjs/go/backend/App.d.ts
 build
 /frontend/wailsjs/go/backend/
 .idea

@@ -2,6 +2,7 @@ package application
 
 import (
 	"KeepInventory/internal/domain"
+	"math/rand"
 )
 
 type ProjektService struct {
@@ -35,13 +36,63 @@ func (s *ProjektService) ListProjekte() ([]*domain.Projekt, error) {
 	return list, nil
 }
 
-func (s *ProjektService) ListProjekteByKunde(kunde string) ([]*domain.Projekt, error) {
-	list, err := s.projRepo.FindByKunde(kunde)
+func (s *ProjektService) FacetFilter(req domain.FilterState) (domain.ProjektFilterResult, error) {
+	projekte, err := s.projRepo.FindByFilter(req)
 	if err != nil {
-		return nil, err
+		return domain.ProjektFilterResult{}, err
 	}
-	if list == nil {
-		list = []*domain.Projekt{}
+
+	facets := s.buildFacets(projekte, req)
+
+	total := len(projekte)
+	start := (req.Page - 1) * req.PageSize
+	if start < 0 {
+		start = 0
 	}
-	return list, nil
+	end := start + req.PageSize
+	if end > total {
+		end = total
+	}
+	pageItems := projekte[start:end]
+
+	return domain.ProjektFilterResult{
+		Items:  pageItems,
+		Total:  total,
+		Facets: facets,
+	}, nil
+}
+
+func (s *ProjektService) buildFacets(projekte []*domain.Projekt, req domain.FilterState) map[string][]domain.FacetOption {
+	facets := make(map[string]map[string]int)
+
+	for _, k := range projekte {
+		incProjektAttr(facets, "name", k.Name)
+		incProjektAttr(facets, "kunde", k.Kunde)
+	}
+
+	out := make(map[string][]domain.FacetOption)
+
+	for field, m := range facets {
+		var opts []domain.FacetOption
+		for name, count := range m {
+			if name != "" {
+				opts = append(opts, domain.FacetOption{
+					ID:    rand.Int63(),
+					Name:  name,
+					Count: count,
+				})
+			}
+
+		}
+		out[field] = opts
+	}
+
+	return out
+}
+
+func incProjektAttr(m map[string]map[string]int, field string, value string) {
+	if m[field] == nil {
+		m[field] = make(map[string]int)
+	}
+	m[field][value]++
 }

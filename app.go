@@ -27,7 +27,7 @@ func NewAppContainer() *AppContainer {
 	}
 	baseDir := filepath.Dir(exePath)
 
-	db := sqliteadapter.OpenDB("inventory.db")
+	db := sqliteadapter.OpenDB(filepath.Join(baseDir, "inventory.db"))
 
 	typRepo := sqliteadapter.NewTypRepositorySQLite(db)
 	artRepo := sqliteadapter.NewHerstellungsartRepositorySQLite(db)

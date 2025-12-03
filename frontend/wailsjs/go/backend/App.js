@@ -22,6 +22,10 @@ export function FilterKunden(arg1) {
   return window['go']['backend']['App']['FilterKunden'](arg1);
 }
 
+export function FilterProjekte(arg1) {
+  return window['go']['backend']['App']['FilterProjekte'](arg1);
+}
+
 export function GetFilterConfig() {
   return window['go']['backend']['App']['GetFilterConfig']();
 }
@@ -68,6 +72,10 @@ export function ListVerschleissteile() {
 
 export function SaveFilterConfig(arg1) {
   return window['go']['backend']['App']['SaveFilterConfig'](arg1);
+}
+
+export function SearchBauteilSuggestions(arg1, arg2) {
+  return window['go']['backend']['App']['SearchBauteilSuggestions'](arg1, arg2);
 }
 
 export function Startup(arg1) {

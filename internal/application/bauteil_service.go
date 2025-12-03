@@ -218,3 +218,7 @@ func incBaueilAttr(m map[string]map[int64]int, field string, id int64) {
 func (s *BauteilService) lookupName(valueMap map[string]map[int64]string, field string, id int64) string {
 	return valueMap[field][id]
 }
+
+func (s *BauteilService) SearchSuggestions(prefix string, limit int) ([]domain.BauteilSuggestion, error) {
+	return s.repo.SearchSuggestions(prefix, limit)
+}

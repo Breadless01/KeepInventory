@@ -1,9 +1,8 @@
 package sqlite
 
 import (
-	"database/sql"
-
 	"KeepInventory/internal/domain"
+	"database/sql"
 )
 
 type ProjektRepositorySQLite struct {
@@ -16,7 +15,7 @@ func NewProjektRepositorySQLite(db *sql.DB) *ProjektRepositorySQLite {
 
 func (r *ProjektRepositorySQLite) Create(p *domain.Projekt) (*domain.Projekt, error) {
 	res, err := r.db.Exec(
-		`INSERT INTO projekte (name, kunde_id) VALUES (?, ?)`,
+		`INSERT INTO projekte (name, kunde) VALUES (?, ?)`,
 		p.Name, p.Kunde,
 	)
 	if err != nil {
@@ -66,27 +65,39 @@ func (r *ProjektRepositorySQLite) FindAll() ([]*domain.Projekt, error) {
 	return projekte, nil
 }
 
-func (r *ProjektRepositorySQLite) FindByKunde(kunde string) ([]*domain.Projekt, error) {
-	rows, err := r.db.Query(
-		`SELECT id, name, kunde FROM projekte WHERE kunde = ? ORDER name id DESC`,
-		kunde,
-	)
+func (r *ProjektRepositorySQLite) FindByFilter(filter domain.FilterState) ([]*domain.Projekt, error) {
+	base := `
+        SELECT 
+            id,
+			name,
+			kunde
+		FROM projekte
+    `
+	where, args := buildWhereClause(filter.Filters)
+	query := base + " " + where + " ORDER BY name ASC"
+
+	rows, err := r.db.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	projekte := make([]*domain.Projekt, 0)
+	var result []*domain.Projekt
+
 	for rows.Next() {
 		var p domain.Projekt
-		if err := rows.Scan(&p.ID, &p.Name, &p.Kunde); err != nil {
+		if err := rows.Scan(
+			&p.ID,
+			&p.Name,
+			&p.Kunde,
+		); err != nil {
 			return nil, err
 		}
-		projekte = append(projekte, &p)
+
+		result = append(result, &p)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
-
-	return projekte, nil
+	return result, nil
 }

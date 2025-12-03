@@ -161,7 +161,6 @@ type row struct {
 
 func (r *BauteilRepositorySQLite) GetAttributeValuesById(facets map[string]map[int64]int) map[string]map[int64]string {
 	valueMap := make(map[string]map[int64]string)
-	log.Println(facets)
 
 	for key, _ := range facets {
 		tableName := strings.Split(key, "_")[0]
@@ -247,6 +246,9 @@ func buildWhereClause(filters map[string][]any) (string, []any) {
 			placeholders[i] = "?"
 			args = append(args, id)
 		}
+		if field == "id" {
+			field = "b." + field
+		}
 		parts = append(parts, fmt.Sprintf("%s IN (%s)", field, strings.Join(placeholders, ",")))
 	}
 
@@ -255,4 +257,29 @@ func buildWhereClause(filters map[string][]any) (string, []any) {
 	}
 
 	return "WHERE " + strings.Join(parts, " AND "), args
+}
+
+func (r *BauteilRepositorySQLite) SearchSuggestions(prefix string, limit int) ([]domain.BauteilSuggestion, error) {
+	q := strings.TrimSpace(prefix) + "*"
+
+	if limit <= 0 {
+		limit = 10
+	}
+
+	stmt := fmt.Sprintf("SELECT b.id, b.teil_name, b.sachnummer FROM bauteile_fts JOIN bauteile b ON b.id = bauteile_fts.rowid WHERE bauteile_fts MATCH '%s' ORDER BY rank", q)
+	rows, err := r.db.Query(stmt)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var res []domain.BauteilSuggestion
+	for rows.Next() {
+		var s domain.BauteilSuggestion
+		if err := rows.Scan(&s.ID, &s.TeilName, &s.Sachnummer); err != nil {
+			return nil, err
+		}
+		res = append(res, s)
+	}
+
+	return res, rows.Err()
 }

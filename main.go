@@ -15,9 +15,10 @@ func main() {
 	appContainer := NewAppContainer()
 
 	err := wails.Run(&options.App{
-		Title:  "KeepInventory",
-		Width:  1024,
-		Height: 768,
+		Title:     "KeepInventory",
+		Frameless: false,
+		Width:     1024,
+		Height:    768,
 		Windows: &windows.Options{
 			WebviewIsTransparent: false,
 			WindowIsTranslucent:  false,

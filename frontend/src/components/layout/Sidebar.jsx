@@ -1,10 +1,12 @@
-import { NavLink } from 'react-router-dom';
+import {NavLink, useNavigate } from 'react-router-dom';
 import { useState } from "react";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import "./sidebar.css";
 
 export function Sidebar({ routes }) {
   const [openMenus, setOpenMenus] = useState({});
+
+  const navigate = useNavigate();
 
   function toggleMenu(id) {
     setOpenMenus((prev) => ({
@@ -15,7 +17,7 @@ export function Sidebar({ routes }) {
 
   return (
     <aside className="ki-sidebar">
-      <div className="ki-sidebar-logo">
+      <div className="ki-sidebar-logo" onClick={() => navigate("/")}>
         <span className="ki-sidebar-logo-icon">W</span>
         <span className="ki-sidebar-logo-text">KeepInventory</span>
       </div>

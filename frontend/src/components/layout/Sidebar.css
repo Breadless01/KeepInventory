@@ -24,6 +24,10 @@
   padding: 0 0.5rem;
 }
 
+.ki-sidebar-logo:hover {
+  cursor: pointer;
+}
+
 .ki-sidebar-logo-icon {
   width: 34px;
   height: 34px;

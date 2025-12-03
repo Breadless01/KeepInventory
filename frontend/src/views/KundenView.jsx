@@ -8,6 +8,7 @@ import {
   GetFilterConfig
 } from "../../wailsjs/go/backend/App";
 import { useToasts } from "../components/ui/ToastContainer.jsx";
+import {Searchbar} from "../components/ui/Searchbar.jsx";
 
 export default function KundenView() {
   const [kunden, setKunden] = useState([]);

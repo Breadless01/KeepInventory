@@ -46,6 +46,8 @@ type CreateBauteilRequest struct {
 	ReserveID                int64 `json:"ReserveID"`
 }
 
+//Bauteile
+
 func (a *App) CreateBauteil(req CreateBauteilRequest) (*domain.Bauteil, error) {
 	return a.BauteilService.CreateBauteil(application.CreateBauteilInput{
 		TeilName:                 req.TeilName,
@@ -62,6 +64,18 @@ func (a *App) CreateBauteil(req CreateBauteilRequest) (*domain.Bauteil, error) {
 	})
 }
 
+func (a *App) FilterBauteile(state domain.FilterState) (domain.BauteilFilterResult, error) {
+	return a.BauteilService.FacetFilter(state)
+}
+
+func (a *App) SearchBauteilSuggestions(prefix string, limit int) ([]domain.BauteilSuggestion, error) {
+	if limit <= 0 {
+		limit = 10
+	}
+	return a.BauteilService.SearchSuggestions(prefix, limit)
+}
+
+// Kunden
 type CreateKundeRequest struct {
 	Name string `json:"name"`
 	Sitz string `json:"sitz"`
@@ -78,6 +92,12 @@ func (a *App) ListKunden() ([]*domain.Kunde, error) {
 	return a.KundeService.ListKunden()
 }
 
+func (a *App) FilterKunden(state domain.FilterState) (domain.KundeFilterResult, error) {
+	return a.KundeService.FacetFilter(state)
+}
+
+//Projekte
+
 type CreateProjektRequest struct {
 	Name  string `json:"name"`
 	Kunde string `json:"kunde"`
@@ -92,6 +112,10 @@ func (a *App) CreateProjekt(req CreateProjektRequest) (*domain.Projekt, error) {
 
 func (a *App) ListProjekte() ([]*domain.Projekt, error) {
 	return a.ProjektService.ListProjekte()
+}
+
+func (a *App) FilterProjekte(state domain.FilterState) (domain.ProjektFilterResult, error) {
+	return a.ProjektService.FacetFilter(state)
 }
 
 func (a *App) ListTypen() ([]*domain.Typ, error) {
@@ -132,12 +156,4 @@ func (a *App) GetFilterConfig() (domain.FilterConfig, error) {
 
 func (a *App) SaveFilterConfig(cfg domain.FilterConfig) error {
 	return a.FilterConfigService.Save(cfg)
-}
-
-func (a *App) FilterBauteile(state domain.FilterState) (domain.BauteilFilterResult, error) {
-	return a.BauteilService.FacetFilter(state)
-}
-
-func (a *App) FilterKunden(state domain.FilterState) (domain.KundeFilterResult, error) {
-	return a.KundeService.FacetFilter(state)
 }

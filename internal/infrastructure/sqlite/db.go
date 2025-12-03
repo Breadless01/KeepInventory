@@ -39,6 +39,23 @@ func OpenDB(path string) *sql.DB {
 	}
 
 	if _, err := db.Exec(`
+		CREATE VIRTUAL TABLE IF NOT EXISTS bauteile_fts USING fts5(
+		  teil_name,
+		  sachnummer,
+		  content='bauteile',
+		  content_rowid='id'
+		);
+	`); err != nil {
+		log.Fatalf("konnte virtuelle Tabelle bauteile nicht anlegen: %v", err)
+	}
+
+	if _, err := db.Exec(`
+		INSERT INTO bauteile_fts (rowid, teil_name, sachnummer) SELECT id, teil_name, sachnummer FROM bauteile
+	`); err != nil {
+		log.Fatalf("Insert Fehler: %v", err)
+	}
+
+	if _, err := db.Exec(`
        CREATE TABLE IF NOT EXISTS typ (
             id      INTEGER PRIMARY KEY AUTOINCREMENT,
             name    TEXT NOT NULL,
@@ -136,6 +153,39 @@ func OpenDB(path string) *sql.DB {
         );
     `); err != nil {
 		log.Fatalf("konnte Tabelle projekte nicht anlegen: %v", err)
+	}
+
+	if _, err := db.Exec(`
+      	CREATE TRIGGER IF NOT EXISTS bauteile_ai AFTER INSERT ON bauteile
+		BEGIN
+		  INSERT INTO bauteile_fts(rowid, teil_name, sachnummer)
+		  VALUES (new.id, new.teil_name, new.sachnummer);
+		END;        
+    `); err != nil {
+		log.Fatalf("konnte Tigger für bauteile After Insert nicht anlegen: %v", err)
+	}
+
+	if _, err := db.Exec(`
+  		CREATE TRIGGER IF NOT EXISTS bauteile_au AFTER UPDATE ON bauteile
+		BEGIN
+		  INSERT INTO bauteile_fts(bauteile_fts, rowid, teil_name, sachnummer)
+		  VALUES('delete', old.id, old.teil_name, old.sachnummer);
+		
+		  INSERT INTO bauteile_fts(rowid, teil_name, sachnummer)
+		  VALUES (new.id, new.teil_name, new.sachnummer);
+		END;
+    `); err != nil {
+		log.Fatalf("konnte Tigger für bauteile After Update nicht anlegen: %v", err)
+	}
+
+	if _, err := db.Exec(`
+        CREATE TRIGGER IF NOT EXISTS bauteile_ad AFTER DELETE ON bauteile
+		BEGIN
+		  INSERT INTO bauteile_fts(bauteile_fts, rowid, teil_name, sachnummer)
+		  VALUES('delete', old.id, old.teil_name, old.sachnummer);
+		END;
+    `); err != nil {
+		log.Fatalf("konnte Tigger für bauteile After Delete nicht anlegen: %v", err)
 	}
 
 	return db

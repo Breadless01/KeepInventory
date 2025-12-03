@@ -141,6 +141,22 @@ export namespace domain {
 		    return a;
 		}
 	}
+	export class BauteilSuggestion {
+	    ID: number;
+	    TeilName: string;
+	    Sachnummer: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new BauteilSuggestion(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.TeilName = source["TeilName"];
+	        this.Sachnummer = source["Sachnummer"];
+	    }
+	}
 	export class FacetOption {
 	    id: number;
 	    name: string;
@@ -400,6 +416,40 @@ export namespace domain {
 	        this.Name = source["Name"];
 	        this.Kunde = source["Kunde"];
 	    }
+	}
+	export class ProjektFilterResult {
+	    items: Projekt[];
+	    total: number;
+	    facets: Record<string, Array<FacetOption>>;
+	
+	    static createFrom(source: any = {}) {
+	        return new ProjektFilterResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.items = this.convertValues(source["items"], Projekt);
+	        this.total = source["total"];
+	        this.facets = this.convertValues(source["facets"], Array<FacetOption>, true);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class Reserve {
 	    ID: number;

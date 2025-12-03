@@ -4,6 +4,7 @@ import ProjekteView from "./views/ProjekteView.jsx";
 import FilterSettingsView from "./views/FilterSettingsView.jsx";
 
 import { Database, Users, Folder, Settings, Diamond, Funnel } from "lucide-react";
+import {createRef} from "react";
 
 export const routes = [
   {
@@ -14,6 +15,7 @@ export const routes = [
       {
         path: "/bauteile",
         id: "bauteile",
+        nodeRef: createRef(),
         label: "Bauteile",
         icon: Diamond,
         component: InventoryView,
@@ -21,6 +23,7 @@ export const routes = [
       {
         path: "/kunden",
         id: "kunden",
+        nodeRef: createRef(),
         label: "Kunden",
         icon: Users,
         component: KundenView
@@ -28,6 +31,7 @@ export const routes = [
       {
         path: "/projekte",
         id: "projekte",
+        nodeRef: createRef(),
         label: "Projekte",
         icon: Folder,
         component: ProjekteView
@@ -42,6 +46,7 @@ export const routes = [
         {
             path: "/filterSettings",
             id: "filterSettings",
+            nodeRef: createRef(),
             label: "Filter",
             icon: Funnel,
             component: FilterSettingsView
