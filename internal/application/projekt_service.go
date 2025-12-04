@@ -49,14 +49,8 @@ func (s *ProjektService) FacetFilter(req domain.FilterState) (domain.ProjektFilt
 	if start < 0 {
 		start = 0
 	}
-	end := start + req.PageSize
-	if end > total {
-		end = total
-	}
-	pageItems := projekte[start:end]
-
 	return domain.ProjektFilterResult{
-		Items:  pageItems,
+		Items:  projekte,
 		Total:  total,
 		Facets: facets,
 	}, nil

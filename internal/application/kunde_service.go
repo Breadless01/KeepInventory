@@ -37,14 +37,9 @@ func (s *KundeService) FacetFilter(req domain.FilterState) (domain.KundeFilterRe
 	if start < 0 {
 		start = 0
 	}
-	end := start + req.PageSize
-	if end > total {
-		end = total
-	}
-	pageItems := kunden[start:end]
 
 	return domain.KundeFilterResult{
-		Items:  pageItems,
+		Items:  kunden,
 		Total:  total,
 		Facets: facets,
 	}, nil

@@ -31,7 +31,7 @@ func (r *ProjektRepositorySQLite) Create(p *domain.Projekt) (*domain.Projekt, er
 
 func (r *ProjektRepositorySQLite) FindByID(id int64) (*domain.Projekt, error) {
 	row := r.db.QueryRow(
-		`SELECT id, name, kunde_id FROM projekte WHERE id = ?`,
+		`SELECT id, name, kunde FROM projekte WHERE id = ?`,
 		id,
 	)
 	var p domain.Projekt
@@ -73,7 +73,7 @@ func (r *ProjektRepositorySQLite) FindByFilter(filter domain.FilterState) ([]*do
 			kunde
 		FROM projekte
     `
-	where, args := buildWhereClause(filter.Filters)
+	where, args := buildWhereClause(filter.Filters, domain.ResourceProjekte)
 	query := base + " " + where + " ORDER BY name ASC"
 
 	rows, err := r.db.Query(query, args...)

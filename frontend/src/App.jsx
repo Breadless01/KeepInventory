@@ -4,12 +4,24 @@ import { Sidebar } from "./components/layout/Sidebar.jsx";
 import { routes } from "./routes.js";
 import LandingView from "./views/Landing.jsx";
 import { ToastProvider } from "./components/ui/ToastContainer.jsx";
-import {createRef} from "react";
+import {useEffect, useState} from "react";
 
 function App() {
+  const [path, setPath] = useState([])
   const location = useLocation();
-  const activeRoute =
-    routes.find((r) => r.path === location.pathname) || routes[0];
+
+  useEffect(() => {
+    routes.find((r) => {
+      if (r.children && r.children.length > 0) {
+        for (const sr of r.children) {
+          if (sr.path === location.pathname) {
+            setPath([r.label, sr.label])
+            return true
+          }
+        }
+      }
+    })
+  }, [location]);
 
   return (
     <ToastProvider>
@@ -18,7 +30,7 @@ function App() {
 
         <main className="ki-main">
           <header className="ki-header">
-            <h1 className="ki-header-title">{activeRoute.label}</h1>
+            <h1 className="ki-header-title">{path.join(" - ")}</h1>
           </header>
             <TransitionGroup>
               <CSSTransition

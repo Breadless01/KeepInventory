@@ -26,9 +26,3 @@ type BauteilFilterResult struct {
 	Total  int                      `json:"total"`
 	Facets map[string][]FacetOption `json:"facets"`
 }
-
-type BauteilSuggestion struct {
-	ID         int64  `json:"ID"`
-	TeilName   string `json:"TeilName"`
-	Sachnummer string `json:"Sachnummer"`
-}

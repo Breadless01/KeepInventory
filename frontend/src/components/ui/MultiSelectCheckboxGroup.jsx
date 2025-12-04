@@ -21,12 +21,7 @@ export default function MultiSelectCheckboxGroup({ label, options, values, onCha
         <div
           className={`ki-ms-control ${open ? "ki-ms-control--open" : ""}`}
           onClick={() => setOpen((o) => !o)}
-          onBlur={() => {
-            console.log("blur")
-            if (open) {
-              setOpen(false)
-            }
-          }}
+          onBlur={() => setOpen((o) => !o)}
         >
           <span className="ki-ms-value">
             {selectedCount === 0 && <span className="ki-ms-placeholder">Keine Auswahl</span>}

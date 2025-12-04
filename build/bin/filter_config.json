@@ -57,7 +57,7 @@
         {
           "field": "reserve_id",
           "label": "Reserve",
-          "enabled": true
+          "enabled": false
         }
       ]
     },

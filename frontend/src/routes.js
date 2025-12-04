@@ -3,8 +3,10 @@ import KundenView from "./views/KundenView.jsx";
 import ProjekteView from "./views/ProjekteView.jsx";
 import FilterSettingsView from "./views/FilterSettingsView.jsx";
 
-import { Database, Users, Folder, Settings, Diamond, Funnel } from "lucide-react";
+import { Database, Users, Folder, Settings, Diamond, Funnel, Truck } from "lucide-react";
 import {createRef} from "react";
+import HerstellerView from "./views/HerstellerView.jsx";
+import LieferantenView from "./views/HerstellerView.jsx";
 
 export const routes = [
   {
@@ -13,7 +15,7 @@ export const routes = [
     icon: Database,
     children: [
       {
-        path: "/bauteile",
+        path: "/db/bauteile",
         id: "bauteile",
         nodeRef: createRef(),
         label: "Bauteile",
@@ -21,7 +23,7 @@ export const routes = [
         component: InventoryView,
       },
       {
-        path: "/kunden",
+        path: "/db/kunden",
         id: "kunden",
         nodeRef: createRef(),
         label: "Kunden",
@@ -29,12 +31,20 @@ export const routes = [
         component: KundenView
       },
       {
-        path: "/projekte",
+        path: "/db/projekte",
         id: "projekte",
         nodeRef: createRef(),
         label: "Projekte",
         icon: Folder,
         component: ProjekteView
+      },
+      {
+        path: "/db/lieferanten",
+        id: "lieferanten",
+        nodeRef: createRef(),
+        label: "Lieferanten",
+        icon: Truck,
+        component: LieferantenView
       }
     ]
   },
@@ -44,7 +54,7 @@ export const routes = [
     icon: Settings,
     children: [
         {
-            path: "/filterSettings",
+            path: "/settings/filterSettings",
             id: "filterSettings",
             nodeRef: createRef(),
             label: "Filter",

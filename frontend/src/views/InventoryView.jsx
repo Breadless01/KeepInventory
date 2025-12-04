@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import { GetFilterConfig, FilterBauteile, SearchBauteilSuggestions } from "../../wailsjs/go/backend/App.js";
+import { GetFilterConfig, FilterBauteile } from "../../wailsjs/go/backend/App.js";
 import { NewBauteilModal } from "../components/special/NewBauteilModal.jsx";
 import FacetFilterPanel from "../components/ui/FacetFilterPanel.jsx"
 import { Plus } from "lucide-react";
 import { FlexTable } from "../components/ui/FlexTable.jsx";
 import { useToasts } from "../components/ui/ToastContainer.jsx";
 import { Searchbar } from "../components/ui/Searchbar.jsx";
-
 
 export default function InventoryView() {
   const [bauteile, setBauteile] = useState([]);
@@ -28,7 +27,7 @@ export default function InventoryView() {
   const [facets, setFacets] = useState({});
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const pageSize = 50;
+  const pageSize = 20;
 
   const { addToast } = useToasts();
 
@@ -108,7 +107,7 @@ export default function InventoryView() {
   return (
     <div className="ki-content">
       <Searchbar
-        engine={SearchBauteilSuggestions}
+        objType="bauteil"
         onEnter={setFilterIds}
       />
       <div className="ki-card">
@@ -129,7 +128,7 @@ export default function InventoryView() {
             />
           </div>
         )}
-        <FlexTable columns={columns} data={safeBauteile} />
+        <FlexTable columns={columns} data={safeBauteile}/>
       </div>
       <NewBauteilModal
         open={modalOpen}

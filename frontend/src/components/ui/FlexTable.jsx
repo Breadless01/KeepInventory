@@ -4,10 +4,11 @@ import { ChevronRight, ChevronLeft } from "lucide-react";
 import { Modal } from "../ui/Modal.jsx";
 
 
-export function FlexTable({ columns, data, pageSize = 10  }) {
+export function FlexTable({ columns, data, pageSize = 10, onNext, onPrevious}) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selected, setSelected] = useState();
+  const [showModal, setShowModal] = useState(false);
+  const [selected, setSelected] = useState(null);
+  const [saving, setSaving] = useState(false);
 
   const safeData = data || [];
   const totalItems = safeData.length;
@@ -33,12 +34,13 @@ export function FlexTable({ columns, data, pageSize = 10  }) {
     return <div className="ki-dt-empty">Keine Spalten definiert.</div>;
   }
 
-  useEffect(() => {
-    setModalOpen(true);
-  }, [selected]);
+  const handleModalOpen = (row) => {
+    setSelected(row);
+    setShowModal(true);
+  }
 
   function handleModalClose() {
-    setModalOpen(false);
+    setShowModal(false);
   }
 
   return (
@@ -70,7 +72,7 @@ export function FlexTable({ columns, data, pageSize = 10  }) {
             <div
               key={row.id ?? row.ID ?? rowIndex}
               className="ki-dt-row"
-              onDoubleClick={() => setSelected(row)}
+              onDoubleClick={() => handleModalOpen(row)}
             >
               {columns.map((col) => (
                 <div
@@ -124,11 +126,52 @@ export function FlexTable({ columns, data, pageSize = 10  }) {
           </button>
         </div>
       </div>
-      {modalOpen ??
+      {showModal && selected ?
         <Modal
-          title={selected}
+          title={"Bauteil: " + selected[columns.find(obj => obj.id === "name").field]}
           onClose={handleModalClose}
-        />}
+        >
+          <form className="ki-form" onSubmit={() => {
+            console.log(selected)
+          }}>
+            {columns.map((column) => {
+              if (!["id", "erstelldatum", "sachnummer"].includes(column.id)) {
+                return(
+                  <div className="ki-form-group" key={column.id}>
+                    <label>{column.label}</label>
+                    <input
+                      className="ki-input"
+                      value={selected[columns.find(obj => obj.id === column.id).label]}
+                      onChange={(e) => {
+                        let obj = {...selected}
+                        obj[column.field] = e.target.value;
+                        setSelected(obj);
+                      }}
+                    />
+                  </div>
+                )
+              }
+            })}
+            <div className="ki-form-actions">
+              <button
+                type="button"
+                className="ki-btn-secondary"
+                onClick={handleModalClose}
+                disabled={saving}
+              >
+                Abbrechen
+              </button>
+              <button
+                type="submit"
+                className="ki-btn-primary"
+                disabled={saving}
+              >
+                {saving ? "Speichern…" : "Bauteil anlegen"}
+              </button>
+            </div>
+          </form>
+        </Modal>
+      : ""}
     </div>
   );
 }

@@ -10,7 +10,6 @@ import (
 	"KeepInventory/internal/domain"
 )
 
-// BauteilRepositorySQLite implementiert BauteilRepository mit SQLite.
 type BauteilRepositorySQLite struct {
 	db *sql.DB
 }
@@ -80,7 +79,7 @@ func (r *BauteilRepositorySQLite) FindByFilter(filter domain.FilterState) ([]*do
 			LEFT JOIN
 			projekte p ON b.projekt_id = p.id
     `
-	where, args := buildWhereClause(filter.Filters)
+	where, args := buildWhereClause(filter.Filters, domain.ResourceBauteile)
 	query := base + " " + where + " ORDER BY teil_name ASC"
 
 	rows, err := r.db.Query(query, args...)
@@ -229,7 +228,7 @@ func (r *BauteilRepositorySQLite) CountByAttributes(
 	return count, nil
 }
 
-func buildWhereClause(filters map[string][]any) (string, []any) {
+func buildWhereClause(filters map[string][]any, objType domain.FilterResource) (string, []any) {
 	if len(filters) == 0 {
 		return "", nil
 	}
@@ -247,7 +246,10 @@ func buildWhereClause(filters map[string][]any) (string, []any) {
 			args = append(args, id)
 		}
 		if field == "id" {
-			field = "b." + field
+			switch objType {
+			case domain.ResourceBauteile:
+				field = "b." + field
+			}
 		}
 		parts = append(parts, fmt.Sprintf("%s IN (%s)", field, strings.Join(placeholders, ",")))
 	}
@@ -257,29 +259,4 @@ func buildWhereClause(filters map[string][]any) (string, []any) {
 	}
 
 	return "WHERE " + strings.Join(parts, " AND "), args
-}
-
-func (r *BauteilRepositorySQLite) SearchSuggestions(prefix string, limit int) ([]domain.BauteilSuggestion, error) {
-	q := strings.TrimSpace(prefix) + "*"
-
-	if limit <= 0 {
-		limit = 10
-	}
-
-	stmt := fmt.Sprintf("SELECT b.id, b.teil_name, b.sachnummer FROM bauteile_fts JOIN bauteile b ON b.id = bauteile_fts.rowid WHERE bauteile_fts MATCH '%s' ORDER BY rank", q)
-	rows, err := r.db.Query(stmt)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var res []domain.BauteilSuggestion
-	for rows.Next() {
-		var s domain.BauteilSuggestion
-		if err := rows.Scan(&s.ID, &s.TeilName, &s.Sachnummer); err != nil {
-			return nil, err
-		}
-		res = append(res, s)
-	}
-
-	return res, rows.Err()
 }

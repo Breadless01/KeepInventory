@@ -10,6 +10,7 @@ import (
 
 type App struct {
 	ctx                           context.Context
+	SearchService                 *application.SearchService
 	BauteilService                *application.BauteilService
 	KundeService                  *application.KundeService
 	ProjektService                *application.ProjektService
@@ -28,6 +29,16 @@ type App struct {
 func (a *App) Startup(ctx context.Context) {
 	log.Println("App starting up...")
 	a.ctx = ctx
+}
+
+// SearchEngine
+func (a *App) Search(query, objectType string, limit int) ([]domain.SearchResult, error) {
+	req := domain.SearchRequest{
+		Query:      query,
+		ObjectType: objectType, // "" = alle
+		Limit:      limit,
+	}
+	return a.SearchService.Search(req)
 }
 
 // View Models für Requests/Responses
@@ -66,13 +77,6 @@ func (a *App) CreateBauteil(req CreateBauteilRequest) (*domain.Bauteil, error) {
 
 func (a *App) FilterBauteile(state domain.FilterState) (domain.BauteilFilterResult, error) {
 	return a.BauteilService.FacetFilter(state)
-}
-
-func (a *App) SearchBauteilSuggestions(prefix string, limit int) ([]domain.BauteilSuggestion, error) {
-	if limit <= 0 {
-		limit = 10
-	}
-	return a.BauteilService.SearchSuggestions(prefix, limit)
 }
 
 // Kunden

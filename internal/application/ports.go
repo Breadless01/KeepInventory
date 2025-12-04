@@ -2,6 +2,10 @@ package application
 
 import "KeepInventory/internal/domain"
 
+type SearchRepository interface {
+	Search(req domain.SearchRequest) ([]domain.SearchResult, error)
+}
+
 type BauteilRepository interface {
 	Create(bauteil *domain.Bauteil) (*domain.Bauteil, error)
 	CountByAttributes(
@@ -11,7 +15,6 @@ type BauteilRepository interface {
 	) (int64, error)
 	FindByFilter(req domain.FilterState) ([]*domain.Bauteil, error)
 	GetAttributeValuesById(facets map[string]map[int64]int) map[string]map[int64]string
-	SearchSuggestions(prefix string, limit int) ([]domain.BauteilSuggestion, error)
 }
 
 type TypRepository interface {

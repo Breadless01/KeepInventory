@@ -3,10 +3,10 @@ import "./modal.css";
 
 export function Modal({ title, children, onClose }) {
   return createPortal(
-    <div className="ki-modal-overlay" onMouseDown={onClose}>
+    <div className="ki-modal-overlay">
       <div
         className="ki-modal"
-        onMouseDown={(e) => e.stopPropagation()} // verhindert Schließen bei Klick ins Modal
+        onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="ki-modal-header">
           <h3>{title}</h3>

@@ -74,8 +74,8 @@ export function SaveFilterConfig(arg1) {
   return window['go']['backend']['App']['SaveFilterConfig'](arg1);
 }
 
-export function SearchBauteilSuggestions(arg1, arg2) {
-  return window['go']['backend']['App']['SearchBauteilSuggestions'](arg1, arg2);
+export function Search(arg1, arg2, arg3) {
+  return window['go']['backend']['App']['Search'](arg1, arg2, arg3);
 }
 
 export function Startup(arg1) {

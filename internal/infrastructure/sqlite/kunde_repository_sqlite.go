@@ -73,7 +73,7 @@ func (r *KundeRepositorySQLite) FindByFilter(filter domain.FilterState) ([]*doma
 			sitz
 		FROM kunden
     `
-	where, args := buildWhereClause(filter.Filters)
+	where, args := buildWhereClause(filter.Filters, domain.ResourceKunden)
 	query := base + " " + where + " ORDER BY name ASC"
 
 	rows, err := r.db.Query(query, args...)

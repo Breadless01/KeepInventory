@@ -5,7 +5,6 @@ import (
 	"time"
 )
 
-// BauteilService kapselt Anwendungslogik rund um Bauteile.
 type BauteilService struct {
 	repo            BauteilRepository
 	typRepo         TypRepository
@@ -58,14 +57,9 @@ func (s *BauteilService) FacetFilter(req domain.FilterState) (domain.BauteilFilt
 	if start < 0 {
 		start = 0
 	}
-	end := start + req.PageSize
-	if end > total {
-		end = total
-	}
-	pageItems := bauteile[start:end]
 
 	return domain.BauteilFilterResult{
-		Items:  pageItems,
+		Items:  bauteile,
 		Total:  total,
 		Facets: facets,
 	}, nil
@@ -86,12 +80,27 @@ type CreateBauteilInput struct {
 	ReserveID                int64
 }
 
+type UpdateBauteilInput struct {
+	TeilName  string
+	KundeId   int64
+	ProjektId int64
+
+	TypID                    int64
+	HerstellungsartID        int64
+	VerschleissteilID        int64
+	FunktionID               int64
+	MaterialID               int64
+	OberflaechenbehandlungID int64
+	FarbeID                  int64
+	ReserveID                int64
+}
+
 func (s *BauteilService) CreateBauteil(in CreateBauteilInput) (*domain.Bauteil, error) {
 	b := &domain.Bauteil{
 		TeilName:     in.TeilName,
 		KundeId:      in.KundeId,
 		ProjektId:    in.ProjektId,
-		Erstelldatum: time.Now().Local().String(),
+		Erstelldatum: time.Now().Local().Format("02.01.2006 05:04:15"),
 
 		TypID:                    in.TypID,
 		HerstellungsartID:        in.HerstellungsartID,
@@ -167,6 +176,10 @@ func (s *BauteilService) CreateBauteil(in CreateBauteilInput) (*domain.Bauteil, 
 	return s.repo.Create(b)
 }
 
+//func (s *BauteilService) UpdateBauteil(in CreateBauteilInput) (*domain.Bauteil, error) {
+//
+//}
+
 func (s *BauteilService) buildFacets(bauteile []*domain.Bauteil, req domain.FilterState) map[string][]domain.FacetOption {
 	facets := make(map[string]map[int64]int) // field -> id -> count
 
@@ -217,8 +230,4 @@ func incBaueilAttr(m map[string]map[int64]int, field string, id int64) {
 
 func (s *BauteilService) lookupName(valueMap map[string]map[int64]string, field string, id int64) string {
 	return valueMap[field][id]
-}
-
-func (s *BauteilService) SearchSuggestions(prefix string, limit int) ([]domain.BauteilSuggestion, error) {
-	return s.repo.SearchSuggestions(prefix, limit)
 }

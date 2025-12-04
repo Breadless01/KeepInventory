@@ -141,22 +141,6 @@ export namespace domain {
 		    return a;
 		}
 	}
-	export class BauteilSuggestion {
-	    ID: number;
-	    TeilName: string;
-	    Sachnummer: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new BauteilSuggestion(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.ID = source["ID"];
-	        this.TeilName = source["TeilName"];
-	        this.Sachnummer = source["Sachnummer"];
-	    }
-	}
 	export class FacetOption {
 	    id: number;
 	    name: string;
@@ -468,6 +452,26 @@ export namespace domain {
 	    }
 	}
 	
+	export class SearchResult {
+	    id: number;
+	    type: string;
+	    label: string;
+	    subtitle: string;
+	    extra: Record<string, string>;
+	
+	    static createFrom(source: any = {}) {
+	        return new SearchResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
+	        this.type = source["type"];
+	        this.label = source["label"];
+	        this.subtitle = source["subtitle"];
+	        this.extra = source["extra"];
+	    }
+	}
 	export class Typ {
 	    ID: number;
 	    Name: string;

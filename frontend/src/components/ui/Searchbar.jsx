@@ -1,7 +1,8 @@
 import {useEffect, useState} from "react";
+import { Search } from "../../../wailsjs/go/backend/App.js"
 import "./Searchbar.css"
 
-export function Searchbar({engine, onEnter}) {
+export function Searchbar({objType, onEnter}) {
   const [filterIds, setFilterIds] = useState([]);
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,7 +20,7 @@ export function Searchbar({engine, onEnter}) {
     setIsSearching(true);
     const handle = setTimeout(async () => {
       try {
-        const res = await engine(searchTerm, 10);
+        const res = await Search(searchTerm, objType, 10);
         setSuggestions(res || []);
         setShowSuggestions(true);
       } catch (err) {
@@ -35,7 +36,7 @@ export function Searchbar({engine, onEnter}) {
   useEffect(() => {
     setFilterIds(suggestions.map((suggestion) => {
       return (
-        suggestion.ID
+        suggestion.id
       )
     }))
   }, [suggestions])
@@ -45,7 +46,7 @@ export function Searchbar({engine, onEnter}) {
       <input
         type="text"
         className="ki-input ki-input-search"
-        placeholder="Bauteil suchen…"
+        placeholder="Suchen…"
         value={searchTerm}
         onKeyDown={(type) => {
           if (type.code === "Enter") {
@@ -67,22 +68,22 @@ export function Searchbar({engine, onEnter}) {
         <div className="ki-search-suggestions">
           {suggestions.map((s) => (
             <button
-              key={s.ID}
+              key={s.id}
               type="button"
               className="ki-search-suggestion"
-              onMouseDown={(e) => e.preventDefault()} // verhindert Blur
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => {
-                onEnter([s.ID])
+                onEnter([s.id])
                 setShowSuggestions(false);
               }}
             >
               <div className="ki-search-suggestion-main">
                       <span className="ki-search-suggestion-title">
-                        {s.TeilName || s.teil_name}
+                        {s.label}
                       </span>
-                {s.Sachnummer && (
+                {s.subtitle && (
                   <span className="ki-search-suggestion-sub">
-                          SN: {s.Sachnummer || s.sachnummer}
+                          {s.subtitle}
                         </span>
                 )}
               </div>

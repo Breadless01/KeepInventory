@@ -146,6 +146,23 @@ func OpenDB(path string) *sql.DB {
 	}
 
 	if _, err := db.Exec(`
+		CREATE VIRTUAL TABLE IF NOT EXISTS kunden_fts USING fts5(
+		  name,
+		  sitz,
+		  content='kunden',
+		  content_rowid='id'
+		);
+	`); err != nil {
+		log.Fatalf("konnte virtuelle Tabelle kunden nicht anlegen: %v", err)
+	}
+
+	if _, err := db.Exec(`
+		INSERT INTO kunden_fts (rowid, name, sitz) SELECT id, name, sitz FROM kunden
+	`); err != nil {
+		log.Fatalf("Insert Fehler: %v", err)
+	}
+
+	if _, err := db.Exec(`
         CREATE TABLE IF NOT EXISTS projekte (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
@@ -153,6 +170,23 @@ func OpenDB(path string) *sql.DB {
         );
     `); err != nil {
 		log.Fatalf("konnte Tabelle projekte nicht anlegen: %v", err)
+	}
+
+	if _, err := db.Exec(`
+		CREATE VIRTUAL TABLE IF NOT EXISTS projekte_fts USING fts5(
+		  name,
+		  kunde,
+		  content='projekte',
+		  content_rowid='id'
+		);
+	`); err != nil {
+		log.Fatalf("konnte virtuelle Tabelle projekte nicht anlegen: %v", err)
+	}
+
+	if _, err := db.Exec(`
+		INSERT INTO projekte_fts (rowid, name, kunde) SELECT id, name, kunde FROM projekte
+	`); err != nil {
+		log.Fatalf("Insert Fehler: %v", err)
 	}
 
 	if _, err := db.Exec(`
@@ -186,6 +220,72 @@ func OpenDB(path string) *sql.DB {
 		END;
     `); err != nil {
 		log.Fatalf("konnte Tigger für bauteile After Delete nicht anlegen: %v", err)
+	}
+
+	if _, err := db.Exec(`
+      	CREATE TRIGGER IF NOT EXISTS kunden_ai AFTER INSERT ON kunden
+		BEGIN
+		  INSERT INTO kunden_fts(rowid, name, sitz)
+		  VALUES (new.id, new.name, new.sitz);
+		END;        
+    `); err != nil {
+		log.Fatalf("konnte Tigger für kunden After Insert nicht anlegen: %v", err)
+	}
+
+	if _, err := db.Exec(`
+  		CREATE TRIGGER IF NOT EXISTS kunden_au AFTER UPDATE ON kunden
+		BEGIN
+		  INSERT INTO kunden_fts(kunden_fts, rowid, name, sitz)
+		  VALUES('delete', old.id, old.name, old.sitz);
+		
+		  INSERT INTO kunden_fts(rowid, name, sitz)
+		  VALUES (new.id, new.new, new.sitz);
+		END;
+    `); err != nil {
+		log.Fatalf("konnte Tigger für kunden After Update nicht anlegen: %v", err)
+	}
+
+	if _, err := db.Exec(`
+        CREATE TRIGGER IF NOT EXISTS kunden_ad AFTER DELETE ON kunden
+		BEGIN
+		  INSERT INTO kunden_fts(kunden_fts, rowid, namw, sitz)
+		  VALUES('delete', old.id, old.name, old.sitz);
+		END;
+    `); err != nil {
+		log.Fatalf("konnte Tigger für kunden After Delete nicht anlegen: %v", err)
+	}
+
+	if _, err := db.Exec(`
+      	CREATE TRIGGER IF NOT EXISTS projekte_ai AFTER INSERT ON projekte
+		BEGIN
+		  INSERT INTO projekte_fts(rowid, name, kunde)
+		  VALUES (new.id, new.name, new.kunde);
+		END;        
+    `); err != nil {
+		log.Fatalf("konnte Tigger für projekte After Insert nicht anlegen: %v", err)
+	}
+
+	if _, err := db.Exec(`
+  		CREATE TRIGGER IF NOT EXISTS projekte_au AFTER UPDATE ON projekte
+		BEGIN
+		  INSERT INTO projekte_fts(projekte_fts, rowid, name, kunde)
+		  VALUES('delete', old.id, old.name, old.kunde);
+		
+		  INSERT INTO projekte_fts(rowid, name, kunde)
+		  VALUES (new.id, new.new, new.kunde);
+		END;
+    `); err != nil {
+		log.Fatalf("konnte Tigger für projekte After Update nicht anlegen: %v", err)
+	}
+
+	if _, err := db.Exec(`
+        CREATE TRIGGER IF NOT EXISTS projekte_ad AFTER DELETE ON projekte
+		BEGIN
+		  INSERT INTO projekte_fts(projekte_fts, rowid, name, kunde)
+		  VALUES('delete', old.id, old.name, old.kunde);
+		END;
+    `); err != nil {
+		log.Fatalf("konnte Tigger für projekte After Delete nicht anlegen: %v", err)
 	}
 
 	return db
