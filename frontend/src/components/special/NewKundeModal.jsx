@@ -99,7 +99,7 @@ export function NewKundeModal({ open, onClose, onCreated }) {
               className="ki-btn-primary"
               disabled={saving}
             >
-              {saving ? "Speichern…" : "Bauteil anlegen"}
+              {saving ? "Speichern…" : "Kunde anlegen"}
             </button>
           </div>
       </form>

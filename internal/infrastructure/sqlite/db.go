@@ -138,7 +138,7 @@ func OpenDB(path string) *sql.DB {
 	if _, err := db.Exec(`
         CREATE TABLE IF NOT EXISTS kunden (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
+            name TEXT,
             sitz TEXT
         );
     `); err != nil {
@@ -165,7 +165,7 @@ func OpenDB(path string) *sql.DB {
 	if _, err := db.Exec(`
         CREATE TABLE IF NOT EXISTS projekte (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
+            name TEXT,
             kunde TEXT
         );
     `); err != nil {
@@ -185,6 +185,33 @@ func OpenDB(path string) *sql.DB {
 
 	if _, err := db.Exec(`
 		INSERT INTO projekte_fts (rowid, name, kunde) SELECT id, name, kunde FROM projekte
+	`); err != nil {
+		log.Fatalf("Insert Fehler: %v", err)
+	}
+
+	if _, err := db.Exec(`
+        CREATE TABLE IF NOT EXISTS lieferanten (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            sitz TEXT
+        );
+    `); err != nil {
+		log.Fatalf("konnte Tabelle lieferanten nicht anlegen: %v", err)
+	}
+
+	if _, err := db.Exec(`
+		CREATE VIRTUAL TABLE IF NOT EXISTS lieferanten_fts USING fts5(
+		  name,
+		  sitz,
+		  content='lieferanten',
+		  content_rowid='id'
+		);
+	`); err != nil {
+		log.Fatalf("konnte virtuelle Tabelle lieferanten nicht anlegen: %v", err)
+	}
+
+	if _, err := db.Exec(`
+		INSERT INTO lieferanten_fts (rowid, name, sitz) SELECT id, name, sitz FROM lieferanten
 	`); err != nil {
 		log.Fatalf("Insert Fehler: %v", err)
 	}
@@ -286,6 +313,50 @@ func OpenDB(path string) *sql.DB {
 		END;
     `); err != nil {
 		log.Fatalf("konnte Tigger für projekte After Delete nicht anlegen: %v", err)
+	}
+
+	if _, err := db.Exec(`
+      	CREATE TRIGGER IF NOT EXISTS lieferanten_ai AFTER INSERT ON lieferanten
+		BEGIN
+		  INSERT INTO lieferanten_fts(rowid, name, sitz)
+		  VALUES (new.id, new.name, new.sitz);
+		END;        
+    `); err != nil {
+		log.Fatalf("konnte Tigger für lieferanten After Insert nicht anlegen: %v", err)
+	}
+
+	if _, err := db.Exec(`
+  		CREATE TRIGGER IF NOT EXISTS lieferanten_au AFTER UPDATE ON lieferanten
+		BEGIN
+		  INSERT INTO lieferanten_fts(lieferanten_fts, rowid, name, sitz)
+		  VALUES('delete', old.id, old.name, old.sitz);
+		
+		  INSERT INTO lieferanten_fts(rowid, name, sitz)
+		  VALUES (new.id, new.new, new.sitz);
+		END;
+    `); err != nil {
+		log.Fatalf("konnte Tigger für lieferanten After Update nicht anlegen: %v", err)
+	}
+
+	if _, err := db.Exec(`
+        CREATE TRIGGER IF NOT EXISTS lieferanten_ad AFTER DELETE ON lieferanten
+		BEGIN
+		  INSERT INTO lieferanten_fts(lieferanten_fts, rowid, name, sitz)
+		  VALUES('delete', old.id, old.name, old.sitz);
+		END;
+    `); err != nil {
+		log.Fatalf("konnte Tigger für projekte After Delete nicht anlegen: %v", err)
+	}
+
+	if _, err := db.Exec(`
+		CREATE TABLE IF NOT EXISTS lieferant_bauteil (
+			lieferant_id INTEGER NOT NULL,
+			bauteil_id INTEGER NOT NULL,
+			PRIMARY KEY (lieferant_id, bauteil_id),
+			FOREIGN KEY (lieferant_id) REFERENCES lieferanten(id),
+			FOREIGN KEY (bauteil_id) REFERENCES bauteile(id))
+	`); err != nil {
+		log.Fatalf("konnte Junction Table für lieferant_bauteil nicht anlegen: %v", err)
 	}
 
 	return db

@@ -2,23 +2,26 @@ package application
 
 import (
 	"KeepInventory/internal/domain"
+	"log"
 	"time"
 )
 
 type BauteilService struct {
-	repo            BauteilRepository
-	typRepo         TypRepository
-	artRepo         HerstellungsartRepository
-	verschRepo      VerschleissteilRepository
-	funktionRepo    FunktionRepository
-	materialRepo    MaterialRepository
-	oberflaecheRepo OberflaechenbehandlungRepository
-	farbeRepo       FarbeRepository
-	reserveRepo     ReserveRepository
+	repo                 BauteilRepository
+	lieferantBauteilRepo LieferantBauteilRepository
+	typRepo              TypRepository
+	artRepo              HerstellungsartRepository
+	verschRepo           VerschleissteilRepository
+	funktionRepo         FunktionRepository
+	materialRepo         MaterialRepository
+	oberflaecheRepo      OberflaechenbehandlungRepository
+	farbeRepo            FarbeRepository
+	reserveRepo          ReserveRepository
 }
 
 func NewBauteilService(
 	repo BauteilRepository,
+	lieferantBauteilRepo LieferantBauteilRepository,
 	typRepo TypRepository,
 	artRepo HerstellungsartRepository,
 	verschRepo VerschleissteilRepository,
@@ -29,15 +32,16 @@ func NewBauteilService(
 	reserveRepo ReserveRepository,
 ) *BauteilService {
 	return &BauteilService{
-		repo:            repo,
-		typRepo:         typRepo,
-		artRepo:         artRepo,
-		verschRepo:      verschRepo,
-		funktionRepo:    funktionRepo,
-		materialRepo:    materialRepo,
-		oberflaecheRepo: oberflaecheRepo,
-		farbeRepo:       farbeRepo,
-		reserveRepo:     reserveRepo,
+		repo:                 repo,
+		lieferantBauteilRepo: lieferantBauteilRepo,
+		typRepo:              typRepo,
+		artRepo:              artRepo,
+		verschRepo:           verschRepo,
+		funktionRepo:         funktionRepo,
+		materialRepo:         materialRepo,
+		oberflaecheRepo:      oberflaecheRepo,
+		farbeRepo:            farbeRepo,
+		reserveRepo:          reserveRepo,
 	}
 }
 
@@ -66,6 +70,7 @@ func (s *BauteilService) FacetFilter(req domain.FilterState) (domain.BauteilFilt
 }
 
 type CreateBauteilInput struct {
+	ID        int64
 	TeilName  string
 	KundeId   int64
 	ProjektId int64
@@ -78,21 +83,7 @@ type CreateBauteilInput struct {
 	OberflaechenbehandlungID int64
 	FarbeID                  int64
 	ReserveID                int64
-}
-
-type UpdateBauteilInput struct {
-	TeilName  string
-	KundeId   int64
-	ProjektId int64
-
-	TypID                    int64
-	HerstellungsartID        int64
-	VerschleissteilID        int64
-	FunktionID               int64
-	MaterialID               int64
-	OberflaechenbehandlungID int64
-	FarbeID                  int64
-	ReserveID                int64
+	LieferantenIds           []int64
 }
 
 func (s *BauteilService) CreateBauteil(in CreateBauteilInput) (*domain.Bauteil, error) {
@@ -173,12 +164,39 @@ func (s *BauteilService) CreateBauteil(in CreateBauteilInput) (*domain.Bauteil, 
 	suffix := domain.GenerateHexSuffix(count)
 	b.Sachnummer = domain.BuildSachnummer(sachnummerKey, suffix)
 
-	return s.repo.Create(b)
+	newB, err := s.repo.Create(b)
+	if err != nil {
+		return nil, err
+	}
+
+	for id := range in.LieferantenIds {
+		lb := domain.LieferantBauteil{
+			LiferantId: int64(id),
+			BauteilId:  newB.ID,
+		}
+		err := s.lieferantBauteilRepo.Create(&lb)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return newB, nil
 }
 
-//func (s *BauteilService) UpdateBauteil(in CreateBauteilInput) (*domain.Bauteil, error) {
-//
-//}
+func (s *BauteilService) FindLieferant(id int64) (*domain.Lieferant, error) {
+	return s.FindLieferant(id)
+}
+
+func (s *BauteilService) UpdateBauteil(in CreateBauteilInput) (*domain.Bauteil, error) {
+	log.Println(in)
+	b := &domain.Bauteil{
+		ID:        in.ID,
+		TeilName:  in.TeilName,
+		KundeId:   in.KundeId,
+		ProjektId: in.ProjektId,
+	}
+	return s.repo.Update(b)
+}
 
 func (s *BauteilService) buildFacets(bauteile []*domain.Bauteil, req domain.FilterState) map[string][]domain.FacetOption {
 	facets := make(map[string]map[int64]int) // field -> id -> count

@@ -65,6 +65,7 @@ func (s *FilterConfigService) buildDefaultConfig() (domain.FilterConfig, error) 
 		domain.ResourceBauteile,
 		domain.ResourceKunden,
 		domain.ResourceProjekte,
+		domain.ResourceLieferanten,
 	}
 	for _, ressource := range tables {
 		tableName := string(ressource)
@@ -75,14 +76,13 @@ func (s *FilterConfigService) buildDefaultConfig() (domain.FilterConfig, error) 
 
 		var fields []domain.FieldFilterConfig
 		for _, c := range cols {
-			// Zeug wie id, erstelldatum etc. optional rausfiltern
 			if c.Name == "id" || c.Name == "erstelldatum" || c.Name == "sachnummer" {
 				continue
 			}
 			fields = append(fields, domain.FieldFilterConfig{
 				Field:   c.Name,
-				Label:   labelFromColumn(c.Name), // z.B. "material_id" -> "Material"
-				Enabled: false,                   // erst in Settings einschalten
+				Label:   labelFromColumn(c.Name),
+				Enabled: false,
 			})
 		}
 

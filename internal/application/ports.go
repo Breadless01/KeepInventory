@@ -8,6 +8,7 @@ type SearchRepository interface {
 
 type BauteilRepository interface {
 	Create(bauteil *domain.Bauteil) (*domain.Bauteil, error)
+	Update(bauteil *domain.Bauteil) (*domain.Bauteil, error)
 	CountByAttributes(
 		typID, herstellungsartID, verschleissteilID,
 		funktionID, materialID, oberflaechenbehandlungID,
@@ -15,6 +16,21 @@ type BauteilRepository interface {
 	) (int64, error)
 	FindByFilter(req domain.FilterState) ([]*domain.Bauteil, error)
 	GetAttributeValuesById(facets map[string]map[int64]int) map[string]map[int64]string
+}
+
+type LieferantRepository interface {
+	Create(lieferant *domain.Lieferant) (*domain.Lieferant, error)
+	Update(lieferant *domain.Lieferant) (*domain.Lieferant, error)
+	FindAll() ([]*domain.Lieferant, error)
+	FindById(id int64) (*domain.Lieferant, error)
+	FindByFilter(req domain.FilterState) ([]*domain.Lieferant, error)
+}
+
+type LieferantBauteilRepository interface {
+	Create(lieferantBauteil *domain.LieferantBauteil) error
+	Delete(bauteilId int64, lieferantId int64) error
+	FindByBauteilId(id int64) ([]*domain.LieferantBauteil, error)
+	FindByLieferantId(id int64) ([]*domain.LieferantBauteil, error)
 }
 
 type TypRepository interface {

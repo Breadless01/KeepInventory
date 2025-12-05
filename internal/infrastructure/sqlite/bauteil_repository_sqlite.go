@@ -2,6 +2,7 @@ package sqlite
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"strconv"
@@ -51,6 +52,37 @@ func (r *BauteilRepositorySQLite) Create(b *domain.Bauteil) (*domain.Bauteil, er
 		return nil, err
 	}
 	b.ID = id
+
+	for id := range b.LieferantIds {
+		_, err := r.db.Exec(`
+			INSERT INTO lieferant_bauteil (
+			   lieferant_id = ?,
+			   bauteil_id = ?,
+			)
+			`, id, b.ID,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return b, nil
+}
+
+func (r *BauteilRepositorySQLite) Update(b *domain.Bauteil) (*domain.Bauteil, error) {
+	log.Println(b)
+	res, err := r.db.Exec(`
+		UPDATE bauteile
+		SET teil_name = ?,
+		    kunde_id = ?,
+		    projekt_id = ?
+		WHERE id = ?		
+	`, b.TeilName, b.KundeId, b.ProjektId, b.ID)
+	log.Println(res, err)
+	if err != nil {
+		return nil, err
+	}
 	return b, nil
 }
 
@@ -63,6 +95,8 @@ func (r *BauteilRepositorySQLite) FindByFilter(filter domain.FilterState) ([]*do
 			k.name,
 			b.projekt_id,
 			p.name,
+			json_group_array(l.id) AS lieferanten_ids,
+			json_group_array(l.name) AS lieferanten_namen,
 			b.erstelldatum,
 			b.typ_id,
 			b.herstellungsart_id,
@@ -78,6 +112,11 @@ func (r *BauteilRepositorySQLite) FindByFilter(filter domain.FilterState) ([]*do
 			kunden k ON b.kunde_id = k.id
 			LEFT JOIN
 			projekte p ON b.projekt_id = p.id
+        	LEFT JOIN
+        	lieferant_bauteil lb ON lb.bauteil_id = b.id
+        	LEFT JOIN
+			lieferanten l ON l.id = lb.lieferant_id
+        GROUP BY b.id
     `
 	where, args := buildWhereClause(filter.Filters, domain.ResourceBauteile)
 	query := base + " " + where + " ORDER BY teil_name ASC"
@@ -96,6 +135,8 @@ func (r *BauteilRepositorySQLite) FindByFilter(filter domain.FilterState) ([]*do
 		var projektID sql.NullString
 		var kundeName sql.NullString
 		var projektName sql.NullString
+		var lieferantenJSON sql.NullString
+		var lieferantenIDsJSON sql.NullString
 		if err := rows.Scan(
 			&b.ID,
 			&b.TeilName,
@@ -103,6 +144,8 @@ func (r *BauteilRepositorySQLite) FindByFilter(filter domain.FilterState) ([]*do
 			&kundeName,
 			&projektID,
 			&projektName,
+			&lieferantenIDsJSON,
+			&lieferantenJSON,
 			&b.Erstelldatum,
 			&b.TypID,
 			&b.HerstellungsartID,
@@ -145,11 +188,27 @@ func (r *BauteilRepositorySQLite) FindByFilter(filter domain.FilterState) ([]*do
 		} else {
 			b.Projekt = ""
 		}
+
+		if lieferantenJSON.Valid && lieferantenJSON.String != "" {
+			if err := json.Unmarshal([]byte(lieferantenJSON.String), &b.Lieferanten); err != nil {
+				return nil, fmt.Errorf("parse lieferanten json: %w", err)
+			}
+		}
+
+		// JSON-Array der Lieferanten-IDs parsen
+		if lieferantenIDsJSON.Valid && lieferantenIDsJSON.String != "" {
+			// z.B. '[1,2,3]'
+			if err := json.Unmarshal([]byte(lieferantenIDsJSON.String), &b.LieferantIds); err != nil {
+				return nil, fmt.Errorf("parse lieferanten_ids json: %w", err)
+			}
+		}
+
 		result = append(result, &b)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
+
 	return result, nil
 }
 

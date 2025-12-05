@@ -1,9 +1,11 @@
 export namespace backend {
 	
 	export class CreateBauteilRequest {
+	    ID: number;
 	    TeilName: string;
 	    KundeId: number;
 	    ProjektId: number;
+	    LieferantenIds: number[];
 	    TypID: number;
 	    HerstellungsartID: number;
 	    VerschleissteilID: number;
@@ -19,9 +21,11 @@ export namespace backend {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
 	        this.TeilName = source["TeilName"];
 	        this.KundeId = source["KundeId"];
 	        this.ProjektId = source["ProjektId"];
+	        this.LieferantenIds = source["LieferantenIds"];
 	        this.TypID = source["TypID"];
 	        this.HerstellungsartID = source["HerstellungsartID"];
 	        this.VerschleissteilID = source["VerschleissteilID"];
@@ -60,6 +64,22 @@ export namespace backend {
 	        this.kunde = source["kunde"];
 	    }
 	}
+	export class LieferantRequest {
+	    ID: number;
+	    Name: string;
+	    Sitz: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new LieferantRequest(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.Name = source["Name"];
+	        this.Sitz = source["Sitz"];
+	    }
+	}
 
 }
 
@@ -72,6 +92,8 @@ export namespace domain {
 	    KundeId: number;
 	    Projekt: string;
 	    ProjektId: number;
+	    Lieferanten: string[];
+	    LieferantIds: number[];
 	    Erstelldatum: string;
 	    TypID: number;
 	    HerstellungsartID: number;
@@ -95,6 +117,8 @@ export namespace domain {
 	        this.KundeId = source["KundeId"];
 	        this.Projekt = source["Projekt"];
 	        this.ProjektId = source["ProjektId"];
+	        this.Lieferanten = source["Lieferanten"];
+	        this.LieferantIds = source["LieferantIds"];
 	        this.Erstelldatum = source["Erstelldatum"];
 	        this.TypID = source["TypID"];
 	        this.HerstellungsartID = source["HerstellungsartID"];
@@ -331,6 +355,56 @@ export namespace domain {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.items = this.convertValues(source["items"], Kunde);
+	        this.total = source["total"];
+	        this.facets = this.convertValues(source["facets"], Array<FacetOption>, true);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class Lieferant {
+	    ID: number;
+	    Name: string;
+	    Sitz: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new Lieferant(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.Name = source["Name"];
+	        this.Sitz = source["Sitz"];
+	    }
+	}
+	export class LieferantFilterResult {
+	    items: Lieferant[];
+	    total: number;
+	    facets: Record<string, Array<FacetOption>>;
+	
+	    static createFrom(source: any = {}) {
+	        return new LieferantFilterResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.items = this.convertValues(source["items"], Lieferant);
 	        this.total = source["total"];
 	        this.facets = this.convertValues(source["facets"], Array<FacetOption>, true);
 	    }

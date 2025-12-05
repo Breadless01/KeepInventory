@@ -5,6 +5,7 @@ import "./NewModal.css"
 
 import {
   CreateBauteil,
+  ListLieferanten,
   ListTypen,
   ListHerstellungsarten,
   ListVerschleissteile,
@@ -16,6 +17,7 @@ import {
   ListKunden,
   ListProjekte
 } from "../../../wailsjs/go/backend/App";
+import MultiSelectCheckboxGroup from "../ui/MultiSelectCheckboxGroup.jsx";
 
 
 export function NewBauteilModal({ open, onClose, onCreated }) {
@@ -33,14 +35,16 @@ export function NewBauteilModal({ open, onClose, onCreated }) {
   const [farben, setFarben] = useState([]);
   const [reserven, setReserven] = useState([]);
 
-  // Kunden und Projekte
+  // Kunden ,Projekte, Lieferanten
   const [kunden, setKunden] = useState([]);
   const [projekte, setProjekte] = useState([]);
+  const [lieferanten, setLieferanten] = useState([]);
 
   // Formularwerte
   const [teilName, setTeilName] = useState("");
   const [kundeID, setKundeID] = useState("");
   const [projektID, setProjektID] = useState("");
+  const [lieferantenIds, setLieferantenIds] = useState([])
 
   const [typID, setTypID] = useState("");
   const [artID, setArtID] = useState("");
@@ -72,7 +76,8 @@ export function NewBauteilModal({ open, onClose, onCreated }) {
           c,
           r,
           kunde,
-          projekt
+          projekt,
+          lieferanten
         ] = await Promise.all([
           ListTypen(),
           ListHerstellungsarten(),
@@ -83,7 +88,8 @@ export function NewBauteilModal({ open, onClose, onCreated }) {
           ListFarben(),
           ListReserven(),
           ListKunden(),
-          ListProjekte()
+          ListProjekte(),
+          ListLieferanten(),
         ]);
 
         setTypen(t || []);
@@ -96,6 +102,7 @@ export function NewBauteilModal({ open, onClose, onCreated }) {
         setReserven(r || []);
         setKunden(kunde || []);
         setProjekte(projekt || []);
+        setLieferanten(lieferanten || [])
       } catch (e) {
         console.error(e);
         setError(String(e));
@@ -311,6 +318,24 @@ export function NewBauteilModal({ open, onClose, onCreated }) {
               {projekte.map((projekt) => (
                 <option key={projekt.ID} value={projekt.ID}>
                   {projekt.Name} {projekt.Kunde && (`– ${projekt.Kunde}`)}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="ki-form-group">
+            <label>Lieferanten</label>
+            <select
+              className="ki-input"
+              value={lieferantenIds}
+              onChange={(e) => {
+                setLieferantenIds([...lieferantenIds, e.target.value])
+              }}
+              required
+              multiple={true}
+            >
+              {lieferanten.map((lieferant) => (
+                <option key={lieferant.ID} value={lieferant.ID}>
+                  {lieferant.Name}
                 </option>
               ))}
             </select>

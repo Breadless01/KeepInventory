@@ -4,13 +4,14 @@ import { ChevronRight, ChevronLeft } from "lucide-react";
 import { Modal } from "../ui/Modal.jsx";
 
 
-export function FlexTable({ columns, data, pageSize = 10, onNext, onPrevious}) {
+export function FlexTable({ columns, data, pageSize = 10, onUpdate}) {
   const [currentPage, setCurrentPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [selected, setSelected] = useState(null);
   const [saving, setSaving] = useState(false);
 
   const safeData = data || [];
+  console.log(safeData)
   const totalItems = safeData.length;
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
 
@@ -41,6 +42,11 @@ export function FlexTable({ columns, data, pageSize = 10, onNext, onPrevious}) {
 
   function handleModalClose() {
     setShowModal(false);
+  }
+
+  function handleSave() {
+    onUpdate(selected)
+    setShowModal(false)
   }
 
   return (
@@ -132,7 +138,6 @@ export function FlexTable({ columns, data, pageSize = 10, onNext, onPrevious}) {
           onClose={handleModalClose}
         >
           <form className="ki-form" onSubmit={() => {
-            console.log(selected)
           }}>
             {columns.map((column) => {
               if (!["id", "erstelldatum", "sachnummer"].includes(column.id)) {
@@ -164,9 +169,10 @@ export function FlexTable({ columns, data, pageSize = 10, onNext, onPrevious}) {
               <button
                 type="submit"
                 className="ki-btn-primary"
+                onClick={handleSave}
                 disabled={saving}
               >
-                {saving ? "Speichern…" : "Bauteil anlegen"}
+                {saving ? "Speichern…" : "Bauteil aktualisieren"}
               </button>
             </div>
           </form>

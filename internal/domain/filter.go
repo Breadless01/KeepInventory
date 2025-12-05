@@ -3,9 +3,10 @@ package domain
 type FilterResource string
 
 const (
-	ResourceBauteile FilterResource = "bauteile"
-	ResourceKunden   FilterResource = "kunden"
-	ResourceProjekte FilterResource = "projekte"
+	ResourceBauteile    FilterResource = "bauteile"
+	ResourceKunden      FilterResource = "kunden"
+	ResourceProjekte    FilterResource = "projekte"
+	ResourceLieferanten FilterResource = "lieferanten"
 )
 
 // Zustand der Filter im UI

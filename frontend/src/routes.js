@@ -5,8 +5,7 @@ import FilterSettingsView from "./views/FilterSettingsView.jsx";
 
 import { Database, Users, Folder, Settings, Diamond, Funnel, Truck } from "lucide-react";
 import {createRef} from "react";
-import HerstellerView from "./views/HerstellerView.jsx";
-import LieferantenView from "./views/HerstellerView.jsx";
+import LieferantenView from "./views/LieferantenView.jsx";
 
 export const routes = [
   {

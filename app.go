@@ -26,10 +26,11 @@ func NewAppContainer() *AppContainer {
 		exePath, _ = os.Getwd()
 	}
 	baseDir := filepath.Dir(exePath)
-	log.Println("db dir:", filepath.Join(baseDir, "inventory.db"))
 	db := sqliteadapter.OpenDB(filepath.Join(baseDir, "inventory.db"))
 
 	searchRepo := sqliteadapter.NewSearchRepositorySQLite(db)
+	lieferantRepo := sqliteadapter.NewLieferantRepositorySQLite(db)
+	lieferantBauteilRepo := sqliteadapter.NewLieferantBauteilRepositorySQLite(db)
 	typRepo := sqliteadapter.NewTypRepositorySQLite(db)
 	artRepo := sqliteadapter.NewHerstellungsartRepositorySQLite(db)
 	verschRepo := sqliteadapter.NewVerschleissteilRepositorySQLite(db)
@@ -44,6 +45,7 @@ func NewAppContainer() *AppContainer {
 	searchService := application.NewSearchService(searchRepo)
 	bauteilService := application.NewBauteilService(
 		bauteilRepo,
+		lieferantBauteilRepo,
 		typRepo,
 		artRepo,
 		verschRepo,
@@ -55,6 +57,8 @@ func NewAppContainer() *AppContainer {
 	)
 
 	filterCfgService := application.NewFilterConfigService(db, baseDir)
+
+	lieferantService := application.NewLieferantService(lieferantRepo)
 
 	kundeRepo := sqliteadapter.NewKundeRepositorySQLite(db)
 	kundeService := application.NewKundeService(kundeRepo)
@@ -75,6 +79,7 @@ func NewAppContainer() *AppContainer {
 	backendApp := &backend.App{
 		SearchService:                 searchService,
 		BauteilService:                bauteilService,
+		LieferantService:              lieferantService,
 		KundeService:                  kundeService,
 		ProjektService:                projektService,
 		TypService:                    typService,

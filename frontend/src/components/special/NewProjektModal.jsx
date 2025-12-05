@@ -99,7 +99,7 @@ export function NewProjektModal({ open, onClose, onCreated }) {
             className="ki-btn-primary"
             disabled={saving}
           >
-            {saving ? "Speichern…" : "Bauteil anlegen"}
+            {saving ? "Speichern…" : "Projekt anlegen"}
           </button>
         </div>
       </form>

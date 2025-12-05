@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { GetFilterConfig, FilterBauteile } from "../../wailsjs/go/backend/App.js";
+import { GetFilterConfig, FilterBauteile, UpdateBauteil } from "../../wailsjs/go/backend/App.js";
 import { NewBauteilModal } from "../components/special/NewBauteilModal.jsx";
 import FacetFilterPanel from "../components/ui/FacetFilterPanel.jsx"
 import { Plus } from "lucide-react";
@@ -93,6 +93,22 @@ export default function InventoryView() {
     }
   }
 
+  async function handleBauteilUpdate(bauteil) {
+    const req = {
+      ID: bauteil.ID,
+      TeilName: bauteil.TeilName,
+      KundeId: bauteil.KundeId,
+      ProjektId: bauteil.ProjektId,
+    };
+    console.log(req)
+    const res = await UpdateBauteil(req)
+    if (!filterConfig) {
+      applyFilter({ resources: [] }, {}, 1);
+    } else {
+      applyFilter(filterConfig, filterState, page);
+    }
+  }
+
   const safeBauteile = bauteile || [];
 
   let facetFieldConfigs = [];
@@ -128,7 +144,9 @@ export default function InventoryView() {
             />
           </div>
         )}
-        <FlexTable columns={columns} data={safeBauteile}/>
+        <FlexTable columns={columns} data={safeBauteile} onUpdate={(bauteil) => {
+          handleBauteilUpdate(bauteil)
+        }}/>
       </div>
       <NewBauteilModal
         open={modalOpen}

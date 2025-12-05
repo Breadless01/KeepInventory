@@ -10,6 +10,10 @@ export function CreateKunde(arg1) {
   return window['go']['backend']['App']['CreateKunde'](arg1);
 }
 
+export function CreateLieferant(arg1) {
+  return window['go']['backend']['App']['CreateLieferant'](arg1);
+}
+
 export function CreateProjekt(arg1) {
   return window['go']['backend']['App']['CreateProjekt'](arg1);
 }
@@ -20,6 +24,10 @@ export function FilterBauteile(arg1) {
 
 export function FilterKunden(arg1) {
   return window['go']['backend']['App']['FilterKunden'](arg1);
+}
+
+export function FilterLieferanten(arg1) {
+  return window['go']['backend']['App']['FilterLieferanten'](arg1);
 }
 
 export function FilterProjekte(arg1) {
@@ -44,6 +52,10 @@ export function ListHerstellungsarten() {
 
 export function ListKunden() {
   return window['go']['backend']['App']['ListKunden']();
+}
+
+export function ListLieferanten() {
+  return window['go']['backend']['App']['ListLieferanten']();
 }
 
 export function ListMaterialien() {
@@ -80,4 +92,12 @@ export function Search(arg1, arg2, arg3) {
 
 export function Startup(arg1) {
   return window['go']['backend']['App']['Startup'](arg1);
+}
+
+export function UpdateBauteil(arg1) {
+  return window['go']['backend']['App']['UpdateBauteil'](arg1);
+}
+
+export function UpdateLieferant(arg1) {
+  return window['go']['backend']['App']['UpdateLieferant'](arg1);
 }

@@ -9,3 +9,10 @@ frontend/dist/
 build
 /frontend/wailsjs/go/backend/
 .idea
+/csvmaker.py
+/csvs/export.csv
+/identifier.sqlite
+/csvs/inventory.csv
+/csvs/komplett.csv
+/csvs/Sachnummer.csv
+/csvs/Sachnummerwerte.csv

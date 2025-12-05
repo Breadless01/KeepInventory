@@ -12,8 +12,10 @@ type App struct {
 	ctx                           context.Context
 	SearchService                 *application.SearchService
 	BauteilService                *application.BauteilService
+	LieferantBauteilService       *application.LieferantBauteilService
 	KundeService                  *application.KundeService
 	ProjektService                *application.ProjektService
+	LieferantService              *application.LieferantService
 	TypService                    *application.TypService
 	HerstellungsartService        *application.HerstellungsartService
 	VerschleissteilService        *application.VerschleissteilService
@@ -25,7 +27,6 @@ type App struct {
 	FilterConfigService           *application.FilterConfigService
 }
 
-// Wails ruft das beim Start auf und gibt dir den Context.
 func (a *App) Startup(ctx context.Context) {
 	log.Println("App starting up...")
 	a.ctx = ctx
@@ -43,9 +44,11 @@ func (a *App) Search(query, objectType string, limit int) ([]domain.SearchResult
 
 // View Models für Requests/Responses
 type CreateBauteilRequest struct {
-	TeilName  string `json:"TeilName"`
-	KundeId   int64  `json:"KundeId"`
-	ProjektId int64  `json:"ProjektId"`
+	ID             int64   `json:"ID"`
+	TeilName       string  `json:"TeilName"`
+	KundeId        int64   `json:"KundeId"`
+	ProjektId      int64   `json:"ProjektId"`
+	LieferantenIds []int64 `json:"LieferantenIds"`
 
 	TypID                    int64 `json:"TypID"`
 	HerstellungsartID        int64 `json:"HerstellungsartID"`
@@ -64,6 +67,7 @@ func (a *App) CreateBauteil(req CreateBauteilRequest) (*domain.Bauteil, error) {
 		TeilName:                 req.TeilName,
 		KundeId:                  req.KundeId,
 		ProjektId:                req.ProjektId,
+		LieferantenIds:           req.LieferantenIds,
 		TypID:                    req.TypID,
 		HerstellungsartID:        req.HerstellungsartID,
 		VerschleissteilID:        req.VerschleissteilID,
@@ -72,6 +76,15 @@ func (a *App) CreateBauteil(req CreateBauteilRequest) (*domain.Bauteil, error) {
 		OberflaechenbehandlungID: req.OberflaechenbehandlungID,
 		FarbeID:                  req.FarbeID,
 		ReserveID:                req.ReserveID,
+	})
+}
+
+func (a *App) UpdateBauteil(req CreateBauteilRequest) (*domain.Bauteil, error) {
+	return a.BauteilService.UpdateBauteil(application.CreateBauteilInput{
+		ID:        req.ID,
+		TeilName:  req.TeilName,
+		KundeId:   req.KundeId,
+		ProjektId: req.ProjektId,
 	})
 }
 
@@ -160,4 +173,33 @@ func (a *App) GetFilterConfig() (domain.FilterConfig, error) {
 
 func (a *App) SaveFilterConfig(cfg domain.FilterConfig) error {
 	return a.FilterConfigService.Save(cfg)
+}
+
+type LieferantRequest struct {
+	ID   int64  `json:"ID"`
+	Name string `json:"Name"`
+	Sitz string `json:"Sitz"`
+}
+
+func (a *App) CreateLieferant(req LieferantRequest) (*domain.Lieferant, error) {
+	return a.LieferantService.CreateLieferant(
+		req.Name,
+		req.Sitz,
+	)
+}
+
+func (a *App) UpdateLieferant(req LieferantRequest) (*domain.Lieferant, error) {
+	return a.LieferantService.UpdateLieferant(application.LieferantInput{
+		ID:   req.ID,
+		Name: req.Name,
+		Sitz: req.Sitz,
+	})
+}
+
+func (a *App) ListLieferanten() ([]*domain.Lieferant, error) {
+	return a.LieferantService.ListLieferanten()
+}
+
+func (a *App) FilterLieferanten(state domain.FilterState) (domain.LieferantFilterResult, error) {
+	return a.LieferantService.FacetFilter(state)
 }

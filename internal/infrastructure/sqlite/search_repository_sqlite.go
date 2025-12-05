@@ -57,11 +57,24 @@ func NewSearchRepositorySQLite(db *sql.DB) *SearchRepositorySQLite {
 				JoinSQL:   "JOIN projekte p ON p.id = projekte_fts.rowid",
 				SelectSQL: `
 					p.id         AS id,
-					'projekt'      AS type,
+					'projekt'    AS type,
 					p.name       AS label,
-					p.kunde       AS subtitle
+					p.kunde      AS subtitle
 				`,
 				WhereTpl: `projekte_fts MATCH ?`,
+				OrderSQL: `ORDER BY rank`,
+			},
+			"lieferant": {
+				FTSTable:  "lieferanten_fts",
+				TableName: "lieferanten",
+				JoinSQL:   "JOIN lieferanten l ON l.id = lieferanten_fts.rowid",
+				SelectSQL: `
+					l.id         AS id,
+					'liferant'   AS type,
+					l.name       AS label,
+					l.sitz       AS subtitle
+				`,
+				WhereTpl: `lieferanten_fts MATCH ?`,
 				OrderSQL: `ORDER BY rank`,
 			},
 		},
