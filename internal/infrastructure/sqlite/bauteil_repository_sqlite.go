@@ -53,8 +53,9 @@ func (r *BauteilRepositorySQLite) Create(b *domain.Bauteil) (*domain.Bauteil, er
 		return nil, err
 	}
 	b.ID = id
+	log.Println(b.LieferantIds)
 
-	for id := range b.LieferantIds {
+	for _, id := range b.LieferantIds {
 		_, err := r.db.Exec(`
 			INSERT INTO lieferant_bauteil (
 			   lieferant_id = ?,
@@ -64,6 +65,7 @@ func (r *BauteilRepositorySQLite) Create(b *domain.Bauteil) (*domain.Bauteil, er
 		)
 
 		if err != nil {
+			log.Println(err)
 			return nil, err
 		}
 	}

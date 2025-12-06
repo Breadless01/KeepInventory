@@ -196,12 +196,13 @@ export function NewBauteilModal({ open, onClose, onCreated }) {
 
     try {
       setSaving(true);
+      console.log(lieferantenIds)
 
       const req = {
         TeilName: teilName,
         KundeID: kundeID ? Number(kundeID) : undefined,
         ProjektID: projektID ? Number(projektID) : undefined,
-
+        LieferantenIds: lieferantenIds,
         TypID: Number(typID),
         HerstellungsartID: Number(artID),
         VerschleissteilID: Number(verschID),
@@ -328,7 +329,7 @@ export function NewBauteilModal({ open, onClose, onCreated }) {
               className="ki-input"
               value={lieferantenIds}
               onChange={(e) => {
-                setLieferantenIds([...lieferantenIds, e.target.value])
+                setLieferantenIds([...lieferantenIds, parseInt(e.target.value)])
               }}
               required
               multiple={true}

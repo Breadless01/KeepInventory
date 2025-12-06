@@ -2,6 +2,7 @@ package application
 
 import (
 	"KeepInventory/internal/domain"
+	"log"
 	"time"
 )
 
@@ -165,12 +166,15 @@ func (s *BauteilService) CreateBauteil(in CreateBauteilInput) (*domain.Bauteil, 
 
 	newB, err := s.repo.Create(b)
 	if err != nil {
+		log.Println(err)
 		return nil, err
 	}
 
-	for id := range in.LieferantenIds {
+	log.Println(newB.ID, in.LieferantenIds)
+
+	for _, id := range in.LieferantenIds {
 		lb := domain.LieferantBauteil{
-			LiferantId: int64(id),
+			LiferantId: id,
 			BauteilId:  newB.ID,
 		}
 		err := s.lieferantBauteilRepo.Create(&lb)
