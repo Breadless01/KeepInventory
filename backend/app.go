@@ -81,10 +81,11 @@ func (a *App) CreateBauteil(req CreateBauteilRequest) (*domain.Bauteil, error) {
 
 func (a *App) UpdateBauteil(req CreateBauteilRequest) (*domain.Bauteil, error) {
 	return a.BauteilService.UpdateBauteil(application.CreateBauteilInput{
-		ID:        req.ID,
-		TeilName:  req.TeilName,
-		KundeId:   req.KundeId,
-		ProjektId: req.ProjektId,
+		ID:             req.ID,
+		TeilName:       req.TeilName,
+		KundeId:        req.KundeId,
+		ProjektId:      req.ProjektId,
+		LieferantenIds: req.LieferantenIds,
 	})
 }
 

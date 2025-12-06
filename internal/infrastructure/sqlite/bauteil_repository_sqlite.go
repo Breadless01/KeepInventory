@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -70,19 +71,106 @@ func (r *BauteilRepositorySQLite) Create(b *domain.Bauteil) (*domain.Bauteil, er
 	return b, nil
 }
 
+type LieferantBauteil struct {
+	LieferantId int64
+	BauteilId   int64
+}
+
 func (r *BauteilRepositorySQLite) Update(b *domain.Bauteil) (*domain.Bauteil, error) {
-	log.Println(b)
-	res, err := r.db.Exec(`
-		UPDATE bauteile
-		SET teil_name = ?,
-		    kunde_id = ?,
-		    projekt_id = ?
-		WHERE id = ?		
-	`, b.TeilName, b.KundeId, b.ProjektId, b.ID)
-	log.Println(res, err)
+	tx, err := r.db.Begin()
 	if err != nil {
 		return nil, err
 	}
+	defer tx.Rollback()
+
+	// 1. Bauteil updaten
+	_, err = tx.Exec(`
+        UPDATE bauteile
+        SET teil_name = ?,
+            kunde_id = ?,
+            projekt_id = ?
+        WHERE id = ?
+    `, b.TeilName, b.KundeId, b.ProjektId, b.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	// 2. Bisherige Zuordnungen für dieses Bauteil holen
+	if len(b.LieferantIds) == 0 {
+		// Wenn keine Lieferanten mehr: alle bisherigen löschen
+		_, err = tx.Exec(`DELETE FROM lieferant_bauteil WHERE bauteil_id = ?`, b.ID)
+		if err != nil {
+			return nil, err
+		}
+		if err := tx.Commit(); err != nil {
+			return nil, err
+		}
+		return b, nil
+	}
+
+	rows, err := tx.Query(`
+        SELECT lieferant_id, bauteil_id
+        FROM lieferant_bauteil
+        WHERE bauteil_id = ?`, b.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	var junctions []LieferantBauteil
+	for rows.Next() {
+		var lb LieferantBauteil
+		if err := rows.Scan(&lb.LieferantId, &lb.BauteilId); err != nil {
+			rows.Close()
+			return nil, err
+		}
+		junctions = append(junctions, lb)
+	}
+	if err := rows.Err(); err != nil {
+		rows.Close()
+		return nil, err
+	}
+	rows.Close()
+
+	// 3. Berechnen: was einfügen, was löschen
+	var toInsert []int64
+	remaining := make([]LieferantBauteil, len(junctions))
+	copy(remaining, junctions)
+
+	for _, lieferantID := range b.LieferantIds {
+		idx := findIndex(remaining, LieferantBauteil{LieferantId: lieferantID})
+		if idx == -1 {
+			toInsert = append(toInsert, lieferantID)
+		}
+		remaining = slices.DeleteFunc(junctions, func(lieferantBauteil LieferantBauteil) bool {
+			return lieferantBauteil.LieferantId == lieferantID
+		})
+	}
+
+	// remaining = was gelöscht werden muss
+	for _, l := range remaining {
+		_, err = tx.Exec(
+			`DELETE FROM lieferant_bauteil WHERE bauteil_id = ? AND lieferant_id = ?`,
+			b.ID, l.LieferantId,
+		)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	for _, lieferantID := range toInsert {
+		_, err = tx.Exec(`
+            INSERT INTO lieferant_bauteil (lieferant_id, bauteil_id)
+            VALUES (?, ?)
+        `, lieferantID, b.ID)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	return b, nil
 }
 
@@ -318,4 +406,13 @@ func buildWhereClause(filters map[string][]any, objType domain.FilterResource) (
 	}
 
 	return "WHERE " + strings.Join(parts, " AND "), args
+}
+
+func findIndex(slice []LieferantBauteil, target LieferantBauteil) int {
+	for i, v := range slice {
+		if v.LieferantId == target.LieferantId {
+			return i
+		}
+	}
+	return -1
 }

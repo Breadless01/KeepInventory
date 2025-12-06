@@ -1,8 +1,8 @@
 import MultiSelectCheckboxGroup from "./MultiSelectCheckboxGroup";
 import "./FacetFilterPanel.css"
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import { ChevronRight, ChevronDown } from "lucide-react";
-
+import { ListLieferanten } from "../../../wailsjs/go/backend/App";
 
 export default function FacetFilterPanel({ facets, filterState, onChange, fieldConfigs, useKeyValues = true, total }) {
   const [open, setOpen] = useState(false);

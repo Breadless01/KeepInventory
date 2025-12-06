@@ -2,18 +2,28 @@ import "./flexTable.css";
 import { useEffect, useMemo, useState } from "react";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { Modal } from "../ui/Modal.jsx";
+import {ListLieferanten} from "../../../wailsjs/go/backend/App.js";
 
 
 export function FlexTable({ columns, data, pageSize = 10, onUpdate}) {
   const [currentPage, setCurrentPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState({});
   const [saving, setSaving] = useState(false);
+  const [lieferanten, setLieferanten] = useState([]);
 
   const safeData = data || [];
-  console.log(safeData)
   const totalItems = safeData.length;
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+
+  useEffect(() => {
+    getLieferanten()
+  }, [showModal]);
+
+  async function getLieferanten() {
+    const lieferanten = await ListLieferanten();
+    setLieferanten(lieferanten);
+  }
 
   useEffect(() => {
     if (currentPage > totalPages) {
@@ -139,20 +149,48 @@ export function FlexTable({ columns, data, pageSize = 10, onUpdate}) {
         >
           <form className="ki-form" onSubmit={() => {
           }}>
-            {columns.map((column) => {
-              if (!["id", "erstelldatum", "sachnummer"].includes(column.id)) {
+            {Object.keys(selected).map((fieldName) => {
+              if (!fieldName.includes("Id") && !fieldName.includes("ID")) {
                 return(
-                  <div className="ki-form-group" key={column.id}>
-                    <label>{column.label}</label>
-                    <input
-                      className="ki-input"
-                      value={selected[columns.find(obj => obj.id === column.id).label]}
-                      onChange={(e) => {
-                        let obj = {...selected}
-                        obj[column.field] = e.target.value;
-                        setSelected(obj);
-                      }}
-                    />
+                  <div className="ki-form-group" key={fieldName}>
+                    <label>{fieldName}</label>
+                    {typeof selected[fieldName] === "string" ? (
+                      <input
+                        className="ki-input"
+                        value={selected[fieldName]}
+                        onChange={(e) => {
+                          let obj = {...selected}
+                          obj[fieldName] = e.target.value;
+                          setSelected(obj);
+                        }}
+                        disabled={["Erstelldatum", "Sachnummer"].includes(fieldName)}
+                      />
+                    ) : (
+                      <select
+                        className="ki-input"
+                        value={selected["LieferantIds"]}
+                        onChange={(e) => {
+                          let values = Array.from(e.target.selectedOptions).map(option => parseInt(option.value));
+                          let obj = {...selected}
+                          obj["LieferantIds"] = values;
+                          setSelected(obj);
+                        }}
+                        required
+                        multiple={true}
+                      >
+                        {lieferanten.map((lieferant) => {
+                          if (fieldName === "Lieferanten") {
+                            return (
+                              <option key={lieferant.ID} value={lieferant.ID}>
+                                {lieferant.Name} - {lieferant.Sitz}
+                              </option>
+                            )
+                          }
+
+                        })}
+                      </select>
+                    )}
+
                   </div>
                 )
               }

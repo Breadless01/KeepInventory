@@ -99,8 +99,8 @@ export default function InventoryView() {
       TeilName: bauteil.TeilName,
       KundeId: bauteil.KundeId,
       ProjektId: bauteil.ProjektId,
+      LieferantenIds: bauteil.LieferantIds
     };
-    console.log(req)
     const res = await UpdateBauteil(req)
     if (!filterConfig) {
       applyFilter({ resources: [] }, {}, 1);

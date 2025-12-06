@@ -2,7 +2,6 @@ package application
 
 import (
 	"KeepInventory/internal/domain"
-	"log"
 	"time"
 )
 
@@ -188,12 +187,12 @@ func (s *BauteilService) FindLieferant(id int64) (*domain.Lieferant, error) {
 }
 
 func (s *BauteilService) UpdateBauteil(in CreateBauteilInput) (*domain.Bauteil, error) {
-	log.Println(in)
 	b := &domain.Bauteil{
-		ID:        in.ID,
-		TeilName:  in.TeilName,
-		KundeId:   in.KundeId,
-		ProjektId: in.ProjektId,
+		ID:           in.ID,
+		TeilName:     in.TeilName,
+		KundeId:      in.KundeId,
+		ProjektId:    in.ProjektId,
+		LieferantIds: in.LieferantenIds,
 	}
 	return s.repo.Update(b)
 }
